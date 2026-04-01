@@ -61,7 +61,7 @@ export default defineConfig({
     // Proxy API calls to Python backend in development
     proxy: {
       "/api": {
-        target: "http://localhost:5000",
+        target: "https://icu-consent-app.onrender.com",
         changeOrigin: true,
         // Python Flask dev server runs on 5000
       },
