@@ -4,7 +4,7 @@ import { useState, useEffect, useRef, useCallback } from "react";
 // CONTENT DATABASE (Phase 1 JSON — embedded for Phase 3 demo)
 // In production this comes from content.json (Section 5)
 // ─────────────────────────────────────────────────────────────────────────────
-const CONTENT_DB = {
+const DEFAULT_CONTENT_DB = {
   version: "1.0.0",
   lastUpdated: "2026-03-27",
   languages: ["en", "ta"],
@@ -85,6 +85,24 @@ const CONTENT_DB = {
         },
       ],
     },
+    // ─────────────────────────────────────────────────────────────────────────────
+// PERSISTENT CONTENT DB — loads from localStorage, falls back to default
+// ─────────────────────────────────────────────────────────────────────────────
+function loadContentDB() {
+  try {
+    const saved = localStorage.getItem("icu_content_db");
+    if (saved) return JSON.parse(saved);
+  } catch {}
+  return DEFAULT_CONTENT_DB;
+}
+
+function saveContentDB(db) {
+  try {
+    localStorage.setItem("icu_content_db", JSON.stringify(db));
+  } catch (e) {
+    console.warn("Could not save content DB to localStorage:", e);
+  }
+}
     {
       id: "mod_cardiovascular",
       order: 2,
@@ -822,9 +840,15 @@ export default function ICUConsentApp() {
     setSettings(newSettings);
     try { sessionStorage.setItem("icu_settings", JSON.stringify(newSettings)); } catch {}
   };
-
   // Phase 6 — Content overrides (institution admin edits, version history)
   // Structure: { [conditionKey]: { en, ta, history: [{en, ta, reason, date}] } }
+  // Persistent content DB — stored in localStorage
+  const [contentDB, setContentDB] = useState(() => loadContentDB());
+
+  const updateContentDB = (newDB) => {
+    setContentDB(newDB);
+    saveContentDB(newDB);
+  };
   const [contentOverrides, setContentOverrides] = useState(() => {
     try {
       const saved = sessionStorage.getItem("icu_content_overrides");
@@ -1005,9 +1029,10 @@ export default function ICUConsentApp() {
   // ADMIN PANEL OVERLAY
   if (appState === "admin") return (
     <AdminPanel
-      contentDB={CONTENT_DB}
+      contentDB={contentDB}
       contentOverrides={contentOverrides}
       onSaveOverride={saveContentOverride}
+      onUpdateContentDB={updateContentDB}
       onClose={() => setAppState("app")}
     />
   );
@@ -1232,7 +1257,7 @@ export default function ICUConsentApp() {
             consentChecks={consentChecks}
             refusal={refusal}
             signatoryData={signatoryData}
-            contentDB={CONTENT_DB}
+            contentDB={contentDB}
             consentStatements={CONSENT_STATEMENTS}
             prognosisLevels={PROGNOSIS_LEVELS}
             onBack={() => setCurrentStep(6)}
@@ -1555,7 +1580,7 @@ function Step3Modules({ selectedModules, expandedModules, setExpandedModules, to
       )}
 
       <div className="space-y-3">
-        {CONTENT_DB.modules.map(module => {
+        {contentDB.modules.map(module => {
           const isExpanded = !!expandedModules[module.id];
           const moduleSelected = selectedModules[module.id] && Object.keys(selectedModules[module.id]).length > 0;
           return (
@@ -2216,7 +2241,7 @@ function PreviewScreen({ patientData, doctorData, selectedModules, prognosisData
       hospitalName: inclHeader ? hospName : "",
       includeHospitalHeader: inclHeader,
       docId,
-      contentDB: CONTENT_DB,
+      contentDB: contentDB,
       consentStatements: CONSENT_STATEMENTS,
       prognosisLevels: PROGNOSIS_LEVELS,
     };
@@ -2367,7 +2392,7 @@ function PreviewScreen({ patientData, doctorData, selectedModules, prognosisData
               fontFamily:"'Noto Sans Tamil', serif" }}>
             மருத்துவ நிலை மற்றும் உறுப்பு செயல்பாடு
           </p>
-          {CONTENT_DB.modules.map(module => {
+          {contentDB.modules.map(module => {
             const modSel = selectedModules[module.id];
             if (!modSel || !Object.keys(modSel).length) return null;
             return (
@@ -2678,7 +2703,7 @@ function SettingsScreen({ settings, onSave, savedPin, onChangePIN, adminPin, onC
 
             <div className="bg-gray-50 border border-gray-200 rounded-xl p-4 text-center">
               <p className="text-xs text-gray-400">ICU Consent App v{local.appVersion}</p>
-              <p className="text-xs text-gray-400">Content DB v{CONTENT_DB.version} · {CONTENT_DB.modules.length} modules</p>
+              <p className="text-xs text-gray-400">Content DB v{contentDB.version} · {contentDB.modules.length} modules</p>
             </div>
           </div>
         )}
@@ -2771,7 +2796,7 @@ function SettingsScreen({ settings, onSave, savedPin, onChangePIN, adminPin, onC
 // ═════════════════════════════════════════════════════════════════════════════
 // PHASE 6 — ADMIN PANEL
 // ═════════════════════════════════════════════════════════════════════════════
-function AdminPanel({ contentDB, contentOverrides, onSaveOverride, onClose }) {
+function AdminPanel({ contentDB, contentOverrides, onSaveOverride, onUpdateContentDB, onClose }) {
   const [view, setView]           = useState("dashboard"); // dashboard | editor | search
   const [editTarget, setEditTarget] = useState(null); // { moduleId, condId, field, level }
   const [searchQuery, setSearchQuery] = useState("");
