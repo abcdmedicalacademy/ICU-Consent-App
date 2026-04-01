@@ -85,24 +85,6 @@ const DEFAULT_CONTENT_DB = {
         },
       ],
     },
-    // ─────────────────────────────────────────────────────────────────────────────
-// PERSISTENT CONTENT DB — loads from localStorage, falls back to default
-// ─────────────────────────────────────────────────────────────────────────────
-function loadContentDB() {
-  try {
-    const saved = localStorage.getItem("icu_content_db");
-    if (saved) return JSON.parse(saved);
-  } catch {}
-  return DEFAULT_CONTENT_DB;
-}
-
-function saveContentDB(db) {
-  try {
-    localStorage.setItem("icu_content_db", JSON.stringify(db));
-  } catch (e) {
-    console.warn("Could not save content DB to localStorage:", e);
-  }
-}
     {
       id: "mod_cardiovascular",
       order: 2,
@@ -465,328 +447,168 @@ function saveContentDB(db) {
   ],
 };
 
+// ─────────────────────────────────────────────────────────────────────────────
+// PERSISTENT CONTENT DB — loads from localStorage, falls back to default
+// ─────────────────────────────────────────────────────────────────────────────
+function loadContentDB() {
+  try {
+    const saved = localStorage.getItem("icu_content_db");
+    if (saved) return JSON.parse(saved);
+  } catch {}
+  return DEFAULT_CONTENT_DB;
+}
+
+function saveContentDB(db) {
+  try {
+    localStorage.setItem("icu_content_db", JSON.stringify(db));
+  } catch (e) {
+    console.warn("Could not save content DB to localStorage:", e);
+  }
+}
+
 const CONSENT_STATEMENTS = [
-  {
-    id: "cs1",
-    en: "The doctor explained the current medical condition in a language I understand.",
-    ta: "மருத்துவர் தற்போதைய மருத்துவ நிலையை நான் புரிந்துகொள்ளும் மொழியில் விளக்கினார்.",
-  },
-  {
-    id: "cs2",
-    en: "I was given adequate time to ask questions and clarify my doubts.",
-    ta: "கேள்விகள் கேட்கவும் என் சந்தேகங்களை தெளிவுபடுத்திக் கொள்ளவும் எனக்கு போதுமான நேரம் வழங்கப்பட்டது.",
-  },
-  {
-    id: "cs3",
-    en: "I was informed about the option of seeking a second medical opinion if I wish to do so.",
-    ta: "நான் விரும்பினால் இரண்டாவது மருத்துவ கருத்தை நாடும் வாய்ப்பு பற்றி என்னிடம் தெரிவிக்கப்பட்டது.",
-  },
-  {
-    id: "cs4",
-    en: "I understand that the prognosis may change and further discussions will be held as needed.",
-    ta: "முன்கணிப்பு மாறலாம் என்பதும் தேவைப்படும்போது மேலும் விவாதங்கள் நடத்தப்படும் என்பதும் எனக்கு புரிகிறது.",
-  },
-  {
-    id: "cs5",
-    en: "I was explained the treatment plan and the reasons for each intervention.",
-    ta: "சிகிச்சை திட்டம் மற்றும் ஒவ்வொரு தலையீட்டிற்கான காரணங்கள் எனக்கு விளக்கப்பட்டன.",
-  },
-  {
-    id: "cs6",
-    en: "I understand my right to withdraw consent at any time and the implications of doing so.",
-    ta: "எந்த நேரத்திலும் சம்மதத்தை திரும்பப் பெறும் என் உரிமையும் அதன் தாக்கங்களும் எனக்கு புரிகிறது.",
-  },
+  { id: "cs1", en: "The doctor explained the current medical condition in a language I understand.", ta: "மருத்துவர் தற்போதைய மருத்துவ நிலையை நான் புரிந்துகொள்ளும் மொழியில் விளக்கினார்." },
+  { id: "cs2", en: "I was given adequate time to ask questions and clarify my doubts.", ta: "கேள்விகள் கேட்கவும் என் சந்தேகங்களை தெளிவுபடுத்திக் கொள்ளவும் எனக்கு போதுமான நேரம் வழங்கப்பட்டது." },
+  { id: "cs3", en: "I was informed about the option of seeking a second medical opinion if I wish to do so.", ta: "நான் விரும்பினால் இரண்டாவது மருத்துவ கருத்தை நாடும் வாய்ப்பு பற்றி என்னிடம் தெரிவிக்கப்பட்டது." },
+  { id: "cs4", en: "I understand that the prognosis may change and further discussions will be held as needed.", ta: "முன்கணிப்பு மாறலாம் என்பதும் தேவைப்படும்போது மேலும் விவாதங்கள் நடத்தப்படும் என்பதும் எனக்கு புரிகிறது." },
+  { id: "cs5", en: "I was explained the treatment plan and the reasons for each intervention.", ta: "சிகிச்சை திட்டம் மற்றும் ஒவ்வொரு தலையீட்டிற்கான காரணங்கள் எனக்கு விளக்கப்பட்டன." },
+  { id: "cs6", en: "I understand my right to withdraw consent at any time and the implications of doing so.", ta: "எந்த நேரத்திலும் சம்மதத்தை திரும்பப் பெறும் என் உரிமையும் அதன் தாக்கங்களும் எனக்கு புரிகிறது." },
 ];
 
 const PROGNOSIS_LEVELS = [
-  { id: "guarded", en: "Guarded", ta: "எச்சரிக்கையான", desc_en: "The outcome is uncertain. There are significant risks but recovery is possible with continued treatment.", desc_ta: "விளைவு நிச்சயமற்றது. கணிசமான அபாயங்கள் உள்ளன, ஆனால் தொடர்ந்த சிகிச்சையால் குணமடைவு சாத்தியம்." },
-  { id: "poor", en: "Poor", ta: "மோசமான", desc_en: "The prognosis is poor. Despite active treatment, the likelihood of meaningful recovery is limited.", desc_ta: "முன்கணிப்பு மோசமானது. தீவிர சிகிச்சை இருந்தாலும், அர்த்தமுள்ள குணமடைவின் சாத்தியம் குறைவு." },
-  { id: "very_poor", en: "Very Poor", ta: "மிகவும் மோசமான", desc_en: "The prognosis is very poor. The condition is life-threatening and survival is uncertain even with maximum support.", desc_ta: "முன்கணிப்பு மிகவும் மோசமானது. நிலை உயிருக்கு அபாயகரமானது, அதிகபட்ச ஆதரவு இருந்தாலும் உயிர்வாழ்வு நிச்சயமற்றது." },
-  { id: "terminal", en: "Terminal", ta: "இறுதிக் கட்ட", desc_en: "The condition is terminal. Despite all medical efforts, survival is not expected. Our focus will shift to comfort and dignity.", desc_ta: "நிலை இறுதிக்கட்டத்தில் உள்ளது. அனைத்து மருத்துவ முயற்சிகள் இருந்தாலும், உயிர்வாழ்வு எதிர்பார்க்கப்படவில்லை. வசதி மற்றும் கண்ணியத்தில் கவனம் செலுத்துவோம்." },
+  { id: "guarded",   en: "Guarded",   ta: "எச்சரிக்கையான",    desc_en: "The outcome is uncertain. There are significant risks but recovery is possible with continued treatment.",                                                          desc_ta: "விளைவு நிச்சயமற்றது. கணிசமான அபாயங்கள் உள்ளன, ஆனால் தொடர்ந்த சிகிச்சையால் குணமடைவு சாத்தியம்." },
+  { id: "poor",      en: "Poor",      ta: "மோசமான",           desc_en: "The prognosis is poor. Despite active treatment, the likelihood of meaningful recovery is limited.",                                                               desc_ta: "முன்கணிப்பு மோசமானது. தீவிர சிகிச்சை இருந்தாலும், அர்த்தமுள்ள குணமடைவின் சாத்தியம் குறைவு." },
+  { id: "very_poor", en: "Very Poor", ta: "மிகவும் மோசமான",  desc_en: "The prognosis is very poor. The condition is life-threatening and survival is uncertain even with maximum support.",                                            desc_ta: "முன்கணிப்பு மிகவும் மோசமானது. நிலை உயிருக்கு அபாயகரமானது, அதிகபட்ச ஆதரவு இருந்தாலும் உயிர்வாழ்வு நிச்சயமற்றது." },
+  { id: "terminal",  en: "Terminal",  ta: "இறுதிக் கட்ட",     desc_en: "The condition is terminal. Despite all medical efforts, survival is not expected. Our focus will shift to comfort and dignity.",                               desc_ta: "நிலை இறுதிக்கட்டத்தில் உள்ளது. அனைத்து மருத்துவ முயற்சிகள் இருந்தாலும், உயிர்வாழ்வு எதிர்பார்க்கப்படவில்லை. வசதி மற்றும் கண்ணியத்தில் கவனம் செலுத்துவோம்." },
 ];
 
 // ─────────────────────────────────────────────────────────────────────────────
 // SEVERITY / TRAJECTORY COLORS
 // ─────────────────────────────────────────────────────────────────────────────
 const SEVERITY_CONFIG = {
-  mild:     { label: "Mild",     ta: "லேசான",       color: "bg-emerald-100 text-emerald-800 border-emerald-300", pill: "bg-emerald-500 text-white" },
-  moderate: { label: "Moderate", ta: "நடுத்தர",     color: "bg-amber-100 text-amber-800 border-amber-300",       pill: "bg-amber-500 text-white" },
-  severe:   { label: "Severe",   ta: "தீவிர",        color: "bg-orange-100 text-orange-800 border-orange-300",    pill: "bg-orange-500 text-white" },
-  critical: { label: "Critical", ta: "மிக தீவிர",   color: "bg-red-100 text-red-800 border-red-300",             pill: "bg-red-600 text-white" },
+  mild:     { label: "Mild",     ta: "லேசான",     color: "bg-emerald-100 text-emerald-800 border-emerald-300", pill: "bg-emerald-500 text-white" },
+  moderate: { label: "Moderate", ta: "நடுத்தர",   color: "bg-amber-100 text-amber-800 border-amber-300",       pill: "bg-amber-500 text-white" },
+  severe:   { label: "Severe",   ta: "தீவிர",      color: "bg-orange-100 text-orange-800 border-orange-300",    pill: "bg-orange-500 text-white" },
+  critical: { label: "Critical", ta: "மிக தீவிர", color: "bg-red-100 text-red-800 border-red-300",             pill: "bg-red-600 text-white" },
 };
 
 const TRAJECTORY_CONFIG = {
-  improving:  { label: "Improving",   ta: "மேம்படுகிறது",     icon: "↑", color: "bg-emerald-100 text-emerald-800 border-emerald-300", pill: "bg-emerald-500 text-white" },
-  status_quo: { label: "Status Quo",  ta: "மாற்றமில்லை",      icon: "→", color: "bg-blue-100 text-blue-800 border-blue-300",          pill: "bg-blue-500 text-white" },
-  worsening:  { label: "Worsening",   ta: "மோசமடைகிறது",      icon: "↓", color: "bg-orange-100 text-orange-800 border-orange-300",    pill: "bg-orange-500 text-white" },
-  failing:    { label: "Failing",     ta: "செயலிழக்கிறது",    icon: "⚠", color: "bg-red-100 text-red-800 border-red-300",             pill: "bg-red-600 text-white" },
+  improving:  { label: "Improving",  ta: "மேம்படுகிறது",   icon: "↑", color: "bg-emerald-100 text-emerald-800 border-emerald-300", pill: "bg-emerald-500 text-white" },
+  status_quo: { label: "Status Quo", ta: "மாற்றமில்லை",    icon: "→", color: "bg-blue-100 text-blue-800 border-blue-300",          pill: "bg-blue-500 text-white" },
+  worsening:  { label: "Worsening",  ta: "மோசமடைகிறது",   icon: "↓", color: "bg-orange-100 text-orange-800 border-orange-300",    pill: "bg-orange-500 text-white" },
+  failing:    { label: "Failing",    ta: "செயலிழக்கிறது", icon: "⚠", color: "bg-red-100 text-red-800 border-red-300",             pill: "bg-red-600 text-white" },
 };
 
 // ─────────────────────────────────────────────────────────────────────────────
 // PHASE 5 — VOICE DICTATION ENGINE
-//
-// Spec (Section 10):
-//   • Microphone button on every free text field
-//   • Web Speech API, locale ta-IN (Tamil — India)
-//   • Dictated text appears in Tamil script, fully editable after dictation
-//   • Visual recording indicator: pulsing red mic + "கேட்கிறேன்..."
-//   • Tap to stop; text appended to existing content
-//   • Graceful fallback: mic button hidden if API unavailable, Tamil
-//     keyboard input shown instead with informational note
-//   • Continuous mode: accumulates all utterances until user stops
-//   • Interim results shown live in a preview strip while speaking
-//   • Works fully on Chrome (Android + Desktop)
-//   • Language selector: Tamil (ta-IN) default; English (en-IN) also available
-//     for bilingual fields
 // ─────────────────────────────────────────────────────────────────────────────
-
-/** Detect Web Speech API availability */
 const SPEECH_AVAILABLE = (() => {
-  try {
-    return !!(window.SpeechRecognition || window.webkitSpeechRecognition);
-  } catch {
-    return false;
-  }
+  try { return !!(window.SpeechRecognition || window.webkitSpeechRecognition); } catch { return false; }
 })();
 
-/**
- * useSpeechDictation — reusable hook
- * Returns { listening, interim, start, stop, supported }
- * Appends final transcripts to the value via onChange.
- */
 function useSpeechDictation({ value, onChange, lang = "ta-IN" }) {
   const [listening, setListening] = useState(false);
   const [interim, setInterim]     = useState("");
   const recRef = useRef(null);
 
   const stop = useCallback(() => {
-    if (recRef.current) {
-      try { recRef.current.stop(); } catch {}
-      recRef.current = null;
-    }
+    if (recRef.current) { try { recRef.current.stop(); } catch {} recRef.current = null; }
     setListening(false);
     setInterim("");
   }, []);
 
   const start = useCallback(() => {
     if (!SPEECH_AVAILABLE) return;
-    // Stop any existing session
     if (recRef.current) { try { recRef.current.stop(); } catch {} }
-
     const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
     const rec = new SR();
     rec.lang = lang;
-    rec.continuous = true;        // keep listening until user taps stop
-    rec.interimResults = true;    // show live preview while speaking
+    rec.continuous = true;
+    rec.interimResults = true;
     rec.maxAlternatives = 1;
-
     rec.onresult = (e) => {
-      let finalChunk = "";
-      let interimChunk = "";
+      let finalChunk = "", interimChunk = "";
       for (let i = e.resultIndex; i < e.results.length; i++) {
         const t = e.results[i][0].transcript;
         if (e.results[i].isFinal) finalChunk += t + " ";
         else interimChunk += t;
       }
-      if (finalChunk) {
-        onChange((value || "") + (value ? " " : "") + finalChunk.trim());
-        setInterim("");
-      } else {
-        setInterim(interimChunk);
-      }
+      if (finalChunk) { onChange((value || "") + (value ? " " : "") + finalChunk.trim()); setInterim(""); }
+      else setInterim(interimChunk);
     };
-
-    rec.onerror = (e) => {
-      console.warn("Speech recognition error:", e.error);
-      stop();
-    };
-
-    rec.onend = () => {
-      // Auto-restart if user hasn't tapped stop (handles Android pause)
-      if (recRef.current) {
-        try { recRef.current.start(); } catch { stop(); }
-      }
-    };
-
+    rec.onerror = (e) => { console.warn("Speech recognition error:", e.error); stop(); };
+    rec.onend = () => { if (recRef.current) { try { recRef.current.start(); } catch { stop(); } } };
     recRef.current = rec;
-    try {
-      rec.start();
-      setListening(true);
-      setInterim("");
-    } catch (err) {
-      console.warn("Could not start speech recognition:", err);
-      recRef.current = null;
-    }
+    try { rec.start(); setListening(true); setInterim(""); }
+    catch (err) { console.warn("Could not start speech recognition:", err); recRef.current = null; }
   }, [lang, value, onChange, stop]);
 
-  // Clean up on unmount
   useEffect(() => () => stop(), [stop]);
-
   return { listening, interim, start, stop, supported: SPEECH_AVAILABLE };
 }
 
-/**
- * VoiceDictationButton — inline mic button for use beside any text field.
- * Shows as a pill button. Hidden automatically if Speech API unsupported.
- *
- * Props:
- *   value      string   current textarea value
- *   onChange   fn       called with new string value
- *   lang       string   "ta-IN" | "en-IN" (default: "ta-IN")
- *   label      string   displayed on button when idle (default: "Voice / குரல்")
- *   className  string   extra classes on wrapper
- */
 function VoiceDictationButton({ value, onChange, lang = "ta-IN", label, className = "" }) {
-  const { listening, interim, start, stop, supported } =
-    useSpeechDictation({ value, onChange, lang });
-
-  if (!supported) return null; // graceful fallback — button simply absent
-
+  const { listening, start, stop, supported } = useSpeechDictation({ value, onChange, lang });
+  if (!supported) return null;
   const btnLabel = label || (lang === "ta-IN" ? "குரல் / Voice" : "Voice");
-
   return (
     <div className={`inline-flex flex-col items-end gap-1 ${className}`}>
-      <button
-        type="button"
-        onClick={listening ? stop : start}
-        className={`flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-semibold
-          transition-all active:scale-95 select-none
-          ${listening
-            ? "bg-red-500 text-white shadow-lg shadow-red-200"
-            : "bg-blue-100 text-blue-700 border border-blue-300 hover:bg-blue-200"
-          }`}
-      >
+      <button type="button" onClick={listening ? stop : start}
+        className={`flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-semibold transition-all active:scale-95 select-none
+          ${listening ? "bg-red-500 text-white shadow-lg shadow-red-200" : "bg-blue-100 text-blue-700 border border-blue-300 hover:bg-blue-200"}`}>
         <span className={listening ? "animate-pulse" : ""}>🎤</span>
-        {listening ? (
-          <span style={{ fontFamily: "'Noto Sans Tamil', sans-serif" }}>
-            கேட்கிறேன்… (Stop)
-          </span>
-        ) : (
-          <span>{btnLabel}</span>
-        )}
+        {listening ? <span style={{ fontFamily: "'Noto Sans Tamil', sans-serif" }}>கேட்கிறேன்… (Stop)</span> : <span>{btnLabel}</span>}
       </button>
     </div>
   );
 }
 
-/**
- * VoiceTextarea — a full textarea + mic button + interim preview,
- * drop-in replacement anywhere free Tamil text is needed.
- *
- * Props:
- *   value, onChange, placeholder, rows — standard textarea props
- *   lang         "ta-IN" | "en-IN"
- *   voiceLabel   custom button label
- *   style        additional inline styles (e.g. font-family for Tamil)
- *   className    extra classes on the textarea
- *   disabled     bool
- */
-function VoiceTextarea({
-  value, onChange, placeholder, rows = 3,
-  lang = "ta-IN", voiceLabel,
-  style = {}, className = "", disabled = false,
-}) {
-  const { listening, interim, start, stop, supported } =
-    useSpeechDictation({ value, onChange, lang });
-
-  const tamilFont = lang === "ta-IN"
-    ? { fontFamily: "'Noto Sans Tamil', 'FreeSans', sans-serif" }
-    : {};
-
+function VoiceTextarea({ value, onChange, placeholder, rows = 3, lang = "ta-IN", voiceLabel, style = {}, className = "", disabled = false }) {
+  const { listening, interim, start, stop, supported } = useSpeechDictation({ value, onChange, lang });
+  const tamilFont = lang === "ta-IN" ? { fontFamily: "'Noto Sans Tamil', 'FreeSans', sans-serif" } : {};
   return (
     <div className="relative">
-      {/* Mic toggle button — top-right of textarea */}
       {supported && (
-        <button
-          type="button"
-          onClick={listening ? stop : start}
-          disabled={disabled}
+        <button type="button" onClick={listening ? stop : start} disabled={disabled}
           title={listening ? "Stop recording" : "Start voice input"}
-          className={`absolute top-2 right-2 z-10 flex items-center gap-1 px-2.5 py-1.5
-            rounded-lg text-xs font-semibold transition-all active:scale-95 select-none
-            ${listening
-              ? "bg-red-500 text-white animate-pulse shadow shadow-red-200"
-              : "bg-blue-100 text-blue-600 border border-blue-200 hover:bg-blue-200"
-            }`}
-        >
+          className={`absolute top-2 right-2 z-10 flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-xs font-semibold transition-all active:scale-95 select-none
+            ${listening ? "bg-red-500 text-white animate-pulse shadow shadow-red-200" : "bg-blue-100 text-blue-600 border border-blue-200 hover:bg-blue-200"}`}>
           🎤
         </button>
       )}
-
-      {/* Textarea */}
-      <textarea
-        value={value}
-        onChange={e => onChange(e.target.value)}
-        rows={rows}
-        placeholder={placeholder}
-        disabled={disabled}
-        className={`w-full border rounded-xl px-4 py-3 text-sm focus:outline-none
-          focus:ring-2 focus:ring-blue-500 resize-none bg-gray-50 pr-12
+      <textarea value={value} onChange={e => onChange(e.target.value)} rows={rows} placeholder={placeholder} disabled={disabled}
+        className={`w-full border rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none bg-gray-50 pr-12
           ${disabled ? "opacity-60 cursor-not-allowed" : ""}
-          ${listening ? "border-red-300 ring-1 ring-red-200" : "border-gray-200"}
-          ${className}`}
-        style={{ ...tamilFont, ...style }}
-      />
-
-      {/* Interim transcript preview */}
+          ${listening ? "border-red-300 ring-1 ring-red-200" : "border-gray-200"} ${className}`}
+        style={{ ...tamilFont, ...style }} />
       {listening && (
-        <div className="mt-1 px-3 py-2 bg-red-50 border border-red-200 rounded-xl
-          text-xs text-red-700 flex items-start gap-2">
+        <div className="mt-1 px-3 py-2 bg-red-50 border border-red-200 rounded-xl text-xs text-red-700 flex items-start gap-2">
           <span className="animate-pulse flex-shrink-0 mt-0.5">●</span>
           <div className="flex-1 min-w-0">
-            <span className="font-semibold"
-              style={{ fontFamily: "'Noto Sans Tamil', sans-serif" }}>
-              கேட்கிறேன்…
-            </span>
-            {interim && (
-              <span className="ml-2 text-red-600 italic break-words"
-                style={tamilFont}>{interim}</span>
-            )}
-            {!interim && (
-              <span className="ml-2 text-red-400 italic">Listening in {lang === "ta-IN" ? "Tamil" : "English"}…</span>
-            )}
+            <span className="font-semibold" style={{ fontFamily: "'Noto Sans Tamil', sans-serif" }}>கேட்கிறேன்…</span>
+            {interim ? <span className="ml-2 text-red-600 italic break-words" style={tamilFont}>{interim}</span>
+              : <span className="ml-2 text-red-400 italic">Listening in {lang === "ta-IN" ? "Tamil" : "English"}…</span>}
           </div>
-          <button onClick={stop}
-            className="flex-shrink-0 text-red-500 hover:text-red-700 font-bold text-base leading-none">
-            ✕
-          </button>
+          <button onClick={stop} className="flex-shrink-0 text-red-500 hover:text-red-700 font-bold text-base leading-none">✕</button>
         </div>
       )}
-
-      {/* Fallback note if speech not available */}
       {!supported && lang === "ta-IN" && (
-        <p className="mt-1 text-xs text-gray-400 italic">
-          🎤 Voice input available on Chrome browser. Use Tamil keyboard to type directly.
-        </p>
+        <p className="mt-1 text-xs text-gray-400 italic">🎤 Voice input available on Chrome browser. Use Tamil keyboard to type directly.</p>
       )}
     </div>
   );
 }
 
-/**
- * VoiceLangSelector — small pill group to choose dictation language.
- * Used above fields that accept both English and Tamil voice input.
- */
 function VoiceLangSelector({ lang, onLangChange }) {
   if (!SPEECH_AVAILABLE) return null;
   return (
     <div className="flex items-center gap-1 mb-1">
       <span className="text-xs text-gray-400 mr-1">Voice lang:</span>
-      {[
-        { code: "ta-IN", label: "தமிழ்" },
-        { code: "en-IN", label: "English" },
-      ].map(({ code, label }) => (
-        <button
-          key={code}
-          type="button"
-          onClick={() => onLangChange(code)}
+      {[{ code: "ta-IN", label: "தமிழ்" }, { code: "en-IN", label: "English" }].map(({ code, label }) => (
+        <button key={code} type="button" onClick={() => onLangChange(code)}
           className={`px-2.5 py-1 rounded-lg text-xs font-semibold transition-all
-            ${lang === code
-              ? "bg-blue-600 text-white"
-              : "bg-gray-100 text-gray-600 border border-gray-200"
-            }`}
-          style={code === "ta-IN" ? { fontFamily: "'Noto Sans Tamil', sans-serif" } : {}}
-        >
+            ${lang === code ? "bg-blue-600 text-white" : "bg-gray-100 text-gray-600 border border-gray-200"}`}
+          style={code === "ta-IN" ? { fontFamily: "'Noto Sans Tamil', sans-serif" } : {}}>
           {label}
         </button>
       ))}
@@ -812,7 +634,7 @@ function formatDate() {
 // MAIN APP
 // ─────────────────────────────────────────────────────────────────────────────
 export default function ICUConsentApp() {
-  const [appState, setAppState] = useState("disclaimer"); // disclaimer | pin_setup | pin_entry | app | settings | admin | admin_pin
+  const [appState, setAppState] = useState("disclaimer");
   const [savedPin, setSavedPin] = useState("1234");
   const [adminPin, setAdminPin] = useState("9999");
   const [pinInput, setPinInput] = useState("");
@@ -820,19 +642,10 @@ export default function ICUConsentApp() {
   const [currentStep, setCurrentStep] = useState(1);
   const [showPreview, setShowPreview] = useState(false);
 
-  // Phase 6 — Settings state (persisted in sessionStorage)
   const [settings, setSettings] = useState(() => {
     try {
       const saved = sessionStorage.getItem("icu_settings");
-      return saved ? JSON.parse(saved) : {
-        hospitalName: "",
-        printerEmail: "",
-        mrdEmail: "",
-        mrdEmailEnabled: false,
-        sessionTimeout: 5,       // minutes
-        storageTier: "session",  // "session" | "local"
-        appVersion: "1.0.0",
-      };
+      return saved ? JSON.parse(saved) : { hospitalName: "", printerEmail: "", mrdEmail: "", mrdEmailEnabled: false, sessionTimeout: 5, storageTier: "session", appVersion: "1.0.0" };
     } catch { return { hospitalName: "", printerEmail: "", mrdEmail: "", mrdEmailEnabled: false, sessionTimeout: 5, storageTier: "session", appVersion: "1.0.0" }; }
   });
 
@@ -840,15 +653,15 @@ export default function ICUConsentApp() {
     setSettings(newSettings);
     try { sessionStorage.setItem("icu_settings", JSON.stringify(newSettings)); } catch {}
   };
-  // Phase 6 — Content overrides (institution admin edits, version history)
-  // Structure: { [conditionKey]: { en, ta, history: [{en, ta, reason, date}] } }
-  // Persistent content DB — stored in localStorage
+
+  // ── PERSISTENT CONTENT DB (Change 3) ──────────────────────────────────────
   const [contentDB, setContentDB] = useState(() => loadContentDB());
 
   const updateContentDB = (newDB) => {
     setContentDB(newDB);
     saveContentDB(newDB);
   };
+
   const [contentOverrides, setContentOverrides] = useState(() => {
     try {
       const saved = sessionStorage.getItem("icu_content_overrides");
@@ -861,10 +674,7 @@ export default function ICUConsentApp() {
       const existing = prev[key] || { history: [] };
       const newOverride = {
         en, ta,
-        history: [
-          { en, ta, reason, date: new Date().toISOString() },
-          ...(existing.history || []).slice(0, 19), // keep last 20
-        ],
+        history: [{ en, ta, reason, date: new Date().toISOString() }, ...(existing.history || []).slice(0, 19)],
       };
       const next = { ...prev, [key]: newOverride };
       try { sessionStorage.setItem("icu_content_overrides", JSON.stringify(next)); } catch {}
@@ -872,7 +682,6 @@ export default function ICUConsentApp() {
     });
   };
 
-  // Form data
   const [patientData, setPatientData] = useState({ name: "", uhid: "", age: "", sessionNumber: "", paediatric: false });
   const [doctorData, setDoctorData] = useState({ name: "", designation: "", regNumber: "", ward: "", othersPresent: "", interpreterPresent: false, interpreterName: "" });
   const [selectedModules, setSelectedModules] = useState({});
@@ -883,30 +692,25 @@ export default function ICUConsentApp() {
   const [signatoryData, setSignatoryData] = useState({ name: "", relationship: "", witnessName: "", witnessDesignation: "" });
 
   const inactivityTimer = useRef(null);
-
-  // ── Phase 7 — PWA state ───────────────────────────────────────────────────
-  const [isOffline, setIsOffline]           = useState(!navigator.onLine);
-  const [updateReady, setUpdateReady]       = useState(false);
-  const [updateMsg, setUpdateMsg]           = useState("");
-  const [installable, setInstallable]       = useState(false);
+  const [isOffline, setIsOffline] = useState(!navigator.onLine);
+  const [updateReady, setUpdateReady] = useState(false);
+  const [installable, setInstallable] = useState(false);
   const [showInstallBanner, setShowInstallBanner] = useState(false);
 
   useEffect(() => {
     const onOffline = () => setIsOffline(true);
     const onOnline  = () => setIsOffline(false);
-    const onUpdate  = (e) => { setUpdateReady(true); setUpdateMsg(e.detail?.message || "Update available"); };
+    const onUpdate  = (e) => setUpdateReady(true);
     const onInstall = () => { setInstallable(true); setShowInstallBanner(true); };
-
-    window.addEventListener("sw:offline",          onOffline);
-    window.addEventListener("sw:online",           onOnline);
+    window.addEventListener("sw:offline", onOffline);
+    window.addEventListener("sw:online", onOnline);
     window.addEventListener("sw:update-available", onUpdate);
-    window.addEventListener("sw:install-available",onInstall);
-
+    window.addEventListener("sw:install-available", onInstall);
     return () => {
-      window.removeEventListener("sw:offline",          onOffline);
-      window.removeEventListener("sw:online",           onOnline);
+      window.removeEventListener("sw:offline", onOffline);
+      window.removeEventListener("sw:online", onOnline);
       window.removeEventListener("sw:update-available", onUpdate);
-      window.removeEventListener("sw:install-available",onInstall);
+      window.removeEventListener("sw:install-available", onInstall);
     };
   }, []);
 
@@ -914,9 +718,7 @@ export default function ICUConsentApp() {
     if (inactivityTimer.current) clearTimeout(inactivityTimer.current);
     if (appState === "app") {
       inactivityTimer.current = setTimeout(() => {
-        setAppState("pin_entry");
-        setPinInput("");
-        setPinError(false);
+        setAppState("pin_entry"); setPinInput(""); setPinError(false);
       }, 5 * 60 * 1000);
     }
   }, [appState]);
@@ -931,40 +733,20 @@ export default function ICUConsentApp() {
     };
   }, [resetInactivityTimer]);
 
-  // ── PIN PAD ─────────────────────────────────────────────────────────────────
   const handlePinKey = (key) => {
-    if (key === "del") {
-      setPinInput(p => p.slice(0, -1));
-      setPinError(false);
-      return;
-    }
+    if (key === "del") { setPinInput(p => p.slice(0, -1)); setPinError(false); return; }
     if (pinInput.length >= 4) return;
     const next = pinInput + key;
     setPinInput(next);
     if (next.length === 4) {
       setTimeout(() => {
-        if (appState === "pin_setup") {
-          setSavedPin(next);
-          setAppState("app");
-          setPinInput("");
-        } else if (appState === "admin_pin") {
-          if (next === adminPin) {
-            setAppState("admin");
-            setPinInput("");
-            setPinError(false);
-          } else {
-            setPinError(true);
-            setTimeout(() => { setPinInput(""); setPinError(false); }, 800);
-          }
+        if (appState === "pin_setup") { setSavedPin(next); setAppState("app"); setPinInput(""); }
+        else if (appState === "admin_pin") {
+          if (next === adminPin) { setAppState("admin"); setPinInput(""); setPinError(false); }
+          else { setPinError(true); setTimeout(() => { setPinInput(""); setPinError(false); }, 800); }
         } else {
-          if (next === savedPin) {
-            setAppState("app");
-            setPinInput("");
-            setPinError(false);
-          } else {
-            setPinError(true);
-            setTimeout(() => { setPinInput(""); setPinError(false); }, 800);
-          }
+          if (next === savedPin) { setAppState("app"); setPinInput(""); setPinError(false); }
+          else { setPinError(true); setTimeout(() => { setPinInput(""); setPinError(false); }, 800); }
         }
       }, 200);
     }
@@ -991,42 +773,28 @@ export default function ICUConsentApp() {
   const setConditionLevel = (moduleId, condId, field, value) => {
     setSelectedModules(prev => ({
       ...prev,
-      [moduleId]: {
-        ...prev[moduleId],
-        [condId]: { ...prev[moduleId][condId], [field]: value },
-      },
+      [moduleId]: { ...prev[moduleId], [condId]: { ...prev[moduleId][condId], [field]: value } },
     }));
   };
 
   const isConditionSelected = (moduleId, condId) => !!(selectedModules[moduleId]?.[condId]);
-
-  // ─── SCREENS ─────────────────────────────────────────────────────────────────
 
   if (appState === "disclaimer") return <DisclaimerScreen onAccept={() => setAppState("pin_setup")} />;
   if (appState === "pin_setup") return <PinScreen mode="setup" pinInput={pinInput} onKey={handlePinKey} error={pinError} />;
   if (appState === "pin_entry") return <PinScreen mode="entry" pinInput={pinInput} onKey={handlePinKey} error={pinError} />;
   if (appState === "admin_pin") return <PinScreen mode="admin" pinInput={pinInput} onKey={handlePinKey} error={pinError} onBack={() => { setPinInput(""); setPinError(false); setAppState("settings"); }} />;
 
-  // SETTINGS OVERLAY
   if (appState === "settings") return (
     <SettingsScreen
-      settings={settings}
-      onSave={saveSettings}
-      savedPin={savedPin}
-      onChangePIN={(newPin) => setSavedPin(newPin)}
-      adminPin={adminPin}
+      settings={settings} onSave={saveSettings} savedPin={savedPin}
+      onChangePIN={(newPin) => setSavedPin(newPin)} adminPin={adminPin}
       onChangeAdminPIN={(newPin) => setAdminPin(newPin)}
       onEnterAdmin={() => { setPinInput(""); setPinError(false); setAppState("admin_pin"); }}
       onClose={() => setAppState("app")}
-      onClearAll={() => {
-        try { sessionStorage.clear(); } catch {}
-        setContentOverrides({});
-        setAppState("app");
-      }}
+      onClearAll={() => { try { sessionStorage.clear(); localStorage.removeItem("icu_content_db"); } catch {} setContentOverrides({}); setContentDB(DEFAULT_CONTENT_DB); setAppState("app"); }}
     />
   );
 
-  // ADMIN PANEL OVERLAY
   if (appState === "admin") return (
     <AdminPanel
       contentDB={contentDB}
@@ -1037,43 +805,26 @@ export default function ICUConsentApp() {
     />
   );
 
-  // PREVIEW OVERLAY
-  if (showPreview) {
-    return (
-      <PreviewScreen
-        patientData={patientData}
-        doctorData={doctorData}
-        selectedModules={selectedModules}
-        prognosisData={prognosisData}
-        consentChecks={consentChecks}
-        refusal={refusal}
-        signatoryData={signatoryData}
-        onClose={() => setShowPreview(false)}
-      />
-    );
-  }
+  if (showPreview) return (
+    <PreviewScreen
+      patientData={patientData} doctorData={doctorData} selectedModules={selectedModules}
+      prognosisData={prognosisData} consentChecks={consentChecks} refusal={refusal}
+      signatoryData={signatoryData} contentDB={contentDB} onClose={() => setShowPreview(false)}
+    />
+  );
 
   const steps = [
-    { num: 1, label: "Patient" },
-    { num: 2, label: "Clinician" },
-    { num: 3, label: "Conditions" },
-    { num: 4, label: "Prognosis" },
-    { num: 5, label: "Consent" },
-    { num: 6, label: "Signatory" },
-    { num: 7, label: "Export" },
+    { num: 1, label: "Patient" }, { num: 2, label: "Clinician" }, { num: 3, label: "Conditions" },
+    { num: 4, label: "Prognosis" }, { num: 5, label: "Consent" }, { num: 6, label: "Signatory" }, { num: 7, label: "Export" },
   ];
 
   return (
     <div className="min-h-screen bg-gray-50" style={{ fontFamily: "'Segoe UI', system-ui, sans-serif" }}>
-
-      {/* ── OFFLINE BANNER ── */}
       {isOffline && (
-        <div className="offline-banner bg-amber-500 text-white text-center py-2 px-4 text-xs font-semibold sticky top-0 z-50">
-          📵 Offline — all features available from cache. Document generation queued.
+        <div className="bg-amber-500 text-white text-center py-2 px-4 text-xs font-semibold sticky top-0 z-50">
+          📵 Offline — all features available from cache.
         </div>
       )}
-
-      {/* ── UPDATE NOTIFICATION ── shown at bottom when update is waiting */}
       {updateReady && (
         <div className="fixed bottom-0 left-0 right-0 z-50 p-4 print:hidden">
           <div className="max-w-2xl mx-auto bg-blue-900 text-white rounded-2xl p-4 shadow-2xl flex items-center gap-3">
@@ -1081,19 +832,13 @@ export default function ICUConsentApp() {
             <div className="flex-1 min-w-0">
               <p className="text-sm font-bold">New content update available</p>
               <p className="text-xs text-blue-300">Will apply at next session start.</p>
-              <p className="text-xs text-blue-300 mt-0.5" style={{ fontFamily: "'Noto Sans Tamil', sans-serif" }}>
-                புதிய புதுப்பிப்பு அடுத்த அமர்வில் பயன்படுத்தப்படும்.
-              </p>
             </div>
-            <button onClick={() => setUpdateReady(false)}
-              className="text-blue-300 hover:text-white text-xl flex-shrink-0">✕</button>
+            <button onClick={() => setUpdateReady(false)} className="text-blue-300 hover:text-white text-xl flex-shrink-0">✕</button>
           </div>
         </div>
       )}
-
-      {/* ── PWA INSTALL BANNER ── */}
       {showInstallBanner && (
-        <div className="install-banner fixed bottom-0 left-0 right-0 z-50 p-4 print:hidden">
+        <div className="fixed bottom-0 left-0 right-0 z-50 p-4 print:hidden">
           <div className="max-w-2xl mx-auto bg-gray-900 text-white rounded-2xl p-4 shadow-2xl">
             <div className="flex items-center gap-3 mb-3">
               <span className="text-2xl">📱</span>
@@ -1101,72 +846,35 @@ export default function ICUConsentApp() {
                 <p className="text-sm font-bold">Add to Home Screen</p>
                 <p className="text-xs text-gray-300">Use ICU Consent as a standalone app — works offline.</p>
               </div>
-              <button onClick={() => setShowInstallBanner(false)}
-                className="text-gray-400 hover:text-white text-xl ml-auto flex-shrink-0">✕</button>
+              <button onClick={() => setShowInstallBanner(false)} className="text-gray-400 hover:text-white text-xl ml-auto flex-shrink-0">✕</button>
             </div>
             <div className="grid grid-cols-2 gap-2">
-              <button onClick={() => setShowInstallBanner(false)}
-                className="py-2.5 rounded-xl border border-gray-600 text-gray-300 text-sm font-semibold">
-                Not now
-              </button>
-              <button
-                onClick={() => {
-                  if (window.swPromptInstall) {
-                    window.swPromptInstall().then(outcome => {
-                      setShowInstallBanner(false);
-                      setInstallable(false);
-                    }).catch(() => setShowInstallBanner(false));
-                  }
-                }}
+              <button onClick={() => setShowInstallBanner(false)} className="py-2.5 rounded-xl border border-gray-600 text-gray-300 text-sm font-semibold">Not now</button>
+              <button onClick={() => { if (window.swPromptInstall) window.swPromptInstall().then(() => { setShowInstallBanner(false); setInstallable(false); }).catch(() => setShowInstallBanner(false)); }}
                 style={{ background: "linear-gradient(135deg, #1B6CA8 0%, #0d4f80 100%)" }}
-                className="py-2.5 rounded-xl text-white text-sm font-bold">
-                Install App
-              </button>
+                className="py-2.5 rounded-xl text-white text-sm font-bold">Install App</button>
             </div>
           </div>
         </div>
       )}
-      {/* TOP BAR */}
+
       <header style={{ background: "linear-gradient(135deg, #1B6CA8 0%, #0d4f80 100%)" }} className="text-white sticky top-0 z-40 shadow-lg">
         <div className="max-w-2xl mx-auto px-4 py-3">
           <div className="flex items-center justify-between">
             <div>
               <h1 className="text-base font-bold tracking-tight">ICU Prognosis Consent</h1>
-              <p className="text-xs text-blue-200" style={{ fontFamily: "'Noto Sans Tamil', sans-serif" }}>
-                ICU முன்கணிப்பு சம்மத பதிவு
-              </p>
+              <p className="text-xs text-blue-200" style={{ fontFamily: "'Noto Sans Tamil', sans-serif" }}>ICU முன்கணிப்பு சம்மத பதிவு</p>
             </div>
             <div className="flex items-center gap-2">
-              {/* Voice availability indicator */}
-              {SPEECH_AVAILABLE && (
-                <span className="text-xs text-blue-200 flex items-center gap-1" title="Voice dictation available">
-                  🎤 <span className="hidden sm:inline">Voice ready</span>
-                </span>
-              )}
-              {totalSelectedConditions > 0 && (
-                <span className="bg-white text-blue-800 text-xs font-bold px-2 py-1 rounded-full">
-                  {totalSelectedConditions} selected
-                </span>
-              )}
-              <button
-                onClick={() => setAppState("settings")}
-                className="text-blue-200 hover:text-white text-lg leading-none"
-                title="Settings"
-              >
-                ⚙
-              </button>
-              <button
-                onClick={() => setAppState("pin_entry")}
-                className="text-blue-200 hover:text-white text-xs border border-blue-400 px-2 py-1 rounded"
-              >
-                Lock
-              </button>
+              {SPEECH_AVAILABLE && <span className="text-xs text-blue-200 flex items-center gap-1">🎤 <span className="hidden sm:inline">Voice ready</span></span>}
+              {totalSelectedConditions > 0 && <span className="bg-white text-blue-800 text-xs font-bold px-2 py-1 rounded-full">{totalSelectedConditions} selected</span>}
+              <button onClick={() => setAppState("settings")} className="text-blue-200 hover:text-white text-lg leading-none" title="Settings">⚙</button>
+              <button onClick={() => setAppState("pin_entry")} className="text-blue-200 hover:text-white text-xs border border-blue-400 px-2 py-1 rounded">Lock</button>
             </div>
           </div>
         </div>
       </header>
 
-      {/* STEP INDICATOR */}
       <div className="bg-white border-b border-gray-200 sticky top-16 z-30">
         <div className="max-w-2xl mx-auto px-4 py-2">
           <div className="flex items-center justify-between">
@@ -1174,16 +882,12 @@ export default function ICUConsentApp() {
               <div key={s.num} className="flex items-center">
                 <div className={`flex flex-col items-center ${currentStep === s.num ? "opacity-100" : currentStep > s.num ? "opacity-70" : "opacity-30"}`}>
                   <div className={`w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold border-2 transition-all
-                    ${currentStep === s.num ? "border-blue-600 bg-blue-600 text-white" :
-                    currentStep > s.num ? "border-blue-400 bg-blue-100 text-blue-700" :
-                    "border-gray-300 bg-white text-gray-400"}`}>
+                    ${currentStep === s.num ? "border-blue-600 bg-blue-600 text-white" : currentStep > s.num ? "border-blue-400 bg-blue-100 text-blue-700" : "border-gray-300 bg-white text-gray-400"}`}>
                     {currentStep > s.num ? "✓" : s.num}
                   </div>
                   <span className="text-xs mt-0.5 hidden sm:block text-gray-600" style={{ fontSize: "10px" }}>{s.label}</span>
                 </div>
-                {i < steps.length - 1 && (
-                  <div className={`h-0.5 w-4 sm:w-6 mx-1 ${currentStep > s.num ? "bg-blue-400" : "bg-gray-200"}`} />
-                )}
+                {i < steps.length - 1 && <div className={`h-0.5 w-4 sm:w-6 mx-1 ${currentStep > s.num ? "bg-blue-400" : "bg-gray-200"}`} />}
               </div>
             ))}
           </div>
@@ -1191,79 +895,30 @@ export default function ICUConsentApp() {
         </div>
       </div>
 
-      {/* SCREEN CONTENT */}
       <main className="max-w-2xl mx-auto px-4 py-6 pb-32">
-        {currentStep === 1 && (
-          <Step1Patient
-            data={patientData}
-            onChange={setPatientData}
-            onNext={() => setCurrentStep(2)}
-          />
-        )}
-        {currentStep === 2 && (
-          <Step2Doctor
-            data={doctorData}
-            onChange={setDoctorData}
-            onBack={() => setCurrentStep(1)}
-            onNext={() => setCurrentStep(3)}
-          />
-        )}
+        {currentStep === 1 && <Step1Patient data={patientData} onChange={setPatientData} onNext={() => setCurrentStep(2)} />}
+        {currentStep === 2 && <Step2Doctor data={doctorData} onChange={setDoctorData} onBack={() => setCurrentStep(1)} onNext={() => setCurrentStep(3)} />}
         {currentStep === 3 && (
           <Step3Modules
-            selectedModules={selectedModules}
-            expandedModules={expandedModules}
-            setExpandedModules={setExpandedModules}
-            toggleCondition={toggleCondition}
-            setConditionLevel={setConditionLevel}
-            isConditionSelected={isConditionSelected}
-            totalSelected={totalSelectedConditions}
-            onBack={() => setCurrentStep(2)}
-            onNext={() => setCurrentStep(4)}
-            onPreview={() => setShowPreview(true)}
+            contentDB={contentDB}
+            selectedModules={selectedModules} expandedModules={expandedModules}
+            setExpandedModules={setExpandedModules} toggleCondition={toggleCondition}
+            setConditionLevel={setConditionLevel} isConditionSelected={isConditionSelected}
+            totalSelected={totalSelectedConditions} onBack={() => setCurrentStep(2)}
+            onNext={() => setCurrentStep(4)} onPreview={() => setShowPreview(true)}
           />
         )}
-        {currentStep === 4 && (
-          <Step4Prognosis
-            data={prognosisData}
-            onChange={setPrognosisData}
-            onBack={() => setCurrentStep(3)}
-            onNext={() => setCurrentStep(5)}
-          />
-        )}
-        {currentStep === 5 && (
-          <Step5Consent
-            checks={consentChecks}
-            setChecks={setConsentChecks}
-            refusal={refusal}
-            setRefusal={setRefusal}
-            onBack={() => setCurrentStep(4)}
-            onNext={() => setCurrentStep(6)}
-          />
-        )}
-        {currentStep === 6 && (
-          <Step6Signatory
-            data={signatoryData}
-            onChange={setSignatoryData}
-            onBack={() => setCurrentStep(5)}
-            onNext={() => setCurrentStep(7)}
-          />
-        )}
+        {currentStep === 4 && <Step4Prognosis data={prognosisData} onChange={setPrognosisData} onBack={() => setCurrentStep(3)} onNext={() => setCurrentStep(5)} />}
+        {currentStep === 5 && <Step5Consent checks={consentChecks} setChecks={setConsentChecks} refusal={refusal} setRefusal={setRefusal} onBack={() => setCurrentStep(4)} onNext={() => setCurrentStep(6)} />}
+        {currentStep === 6 && <Step6Signatory data={signatoryData} onChange={setSignatoryData} onBack={() => setCurrentStep(5)} onNext={() => setCurrentStep(7)} />}
         {currentStep === 7 && (
           <Step7Export
-            patientData={patientData}
-            doctorData={doctorData}
-            selectedModules={selectedModules}
-            prognosisData={prognosisData}
-            consentChecks={consentChecks}
-            refusal={refusal}
-            signatoryData={signatoryData}
-            contentDB={contentDB}
-            consentStatements={CONSENT_STATEMENTS}
-            prognosisLevels={PROGNOSIS_LEVELS}
-            onBack={() => setCurrentStep(6)}
+            patientData={patientData} doctorData={doctorData} selectedModules={selectedModules}
+            prognosisData={prognosisData} consentChecks={consentChecks} refusal={refusal}
+            signatoryData={signatoryData} contentDB={contentDB} consentStatements={CONSENT_STATEMENTS}
+            prognosisLevels={PROGNOSIS_LEVELS} onBack={() => setCurrentStep(6)}
             onPreview={() => setShowPreview(true)}
             onNewPatient={() => {
-              // Phase 7 — Signal SW that session ended (safe to apply waiting update)
               if (window.swSignalSessionEnd) window.swSignalSessionEnd();
               setPatientData({ name: "", uhid: "", age: "", sessionNumber: "", paediatric: false });
               setDoctorData({ name: "", designation: "", regNumber: "", ward: "", othersPresent: "", interpreterPresent: false, interpreterName: "" });
@@ -1298,20 +953,17 @@ function DisclaimerScreen({ onAccept }) {
           <div className="bg-amber-50 border border-amber-200 rounded-xl p-4">
             <h2 className="font-bold text-amber-800 text-sm mb-2">⚠ Important Disclaimer</h2>
             <p className="text-xs text-amber-700 leading-relaxed">
-              This application is a <strong>documentation assistance tool</strong>. It does not constitute a medical records system. All generated documents must be <strong>printed, signed, and filed</strong> in the patient's physical medical record. The healthcare institution is solely responsible for document retention and medicolegal compliance. The developer bears no responsibility for document storage or medicolegal outcomes.
+              This application is a <strong>documentation assistance tool</strong>. It does not constitute a medical records system. All generated documents must be <strong>printed, signed, and filed</strong> in the patient's physical medical record. The healthcare institution is solely responsible for document retention and medicolegal compliance.
             </p>
           </div>
           <div className="bg-blue-50 border border-blue-200 rounded-xl p-4">
             <h2 className="font-bold text-blue-800 text-sm mb-2">முக்கிய அறிவிப்பு</h2>
             <p className="text-xs text-blue-700 leading-relaxed">
-              இந்த பயன்பாடு ஒரு <strong>ஆவண உதவி கருவி</strong>. இது மருத்துவ பதிவு அமைப்பல்ல. உருவாக்கப்பட்ட அனைத்து ஆவணங்களும் <strong>அச்சிடப்பட்டு, கையொப்பமிட்டு</strong>, நோயாளியின் உடல் மருத்துவ பதிவில் சேர்க்கப்பட வேண்டும்.
+              இந்த பயன்பாடு ஒரு <strong>ஆவண உதவி கருவி</strong>. உருவாக்கப்பட்ட அனைத்து ஆவணங்களும் <strong>அச்சிடப்பட்டு, கையொப்பமிட்டு</strong>, நோயாளியின் உடல் மருத்துவ பதிவில் சேர்க்கப்பட வேண்டும்.
             </p>
           </div>
-          <button
-            onClick={onAccept}
-            style={{ background: "linear-gradient(135deg, #1B6CA8 0%, #0d4f80 100%)" }}
-            className="w-full text-white py-4 rounded-xl font-bold text-sm shadow-lg active:scale-95 transition-transform"
-          >
+          <button onClick={onAccept} style={{ background: "linear-gradient(135deg, #1B6CA8 0%, #0d4f80 100%)" }}
+            className="w-full text-white py-4 rounded-xl font-bold text-sm shadow-lg active:scale-95 transition-transform">
             I Understand and Accept<br />
             <span className="text-blue-200 font-normal text-xs">நான் புரிந்துகொண்டு ஒப்புக்கொள்கிறேன்</span>
           </button>
@@ -1331,35 +983,22 @@ function PinScreen({ mode, pinInput, onKey, error, onBack }) {
   return (
     <div className="min-h-screen flex items-center justify-center" style={{ background: "linear-gradient(135deg, #1B6CA8 0%, #0d3f6b 100%)" }}>
       <div className="text-center w-full max-w-xs px-6">
-        {onBack && (
-          <button onClick={onBack} className="text-blue-200 text-sm mb-6 flex items-center gap-1">
-            ← Back
-          </button>
-        )}
+        {onBack && <button onClick={onBack} className="text-blue-200 text-sm mb-6 flex items-center gap-1">← Back</button>}
         <div className="text-5xl mb-4">{mode === "admin" ? "🔐" : "🔒"}</div>
         <h2 className="text-white text-xl font-bold mb-1">{titles[mode] || "Enter PIN"}</h2>
         <p className="text-blue-200 text-sm mb-8">{subtitles[mode] || ""}</p>
         <div className="flex justify-center gap-4 mb-8">
           {[0,1,2,3].map(i => (
-            <div key={i} className={`w-4 h-4 rounded-full border-2 transition-all ${
-              error ? "border-red-400 bg-red-400" :
-              i < pinInput.length ? "border-white bg-white" : "border-blue-300 bg-transparent"
-            }`} />
+            <div key={i} className={`w-4 h-4 rounded-full border-2 transition-all ${error ? "border-red-400 bg-red-400" : i < pinInput.length ? "border-white bg-white" : "border-blue-300 bg-transparent"}`} />
           ))}
         </div>
         {error && <p className="text-red-300 text-sm mb-4">Incorrect PIN. Try again.</p>}
         <div className="grid grid-cols-3 gap-3">
           {keys.map((k, i) => (
             k === "" ? <div key={i} /> :
-            <button
-              key={i}
-              onClick={() => onKey(k)}
+            <button key={i} onClick={() => onKey(k)}
               className={`h-16 rounded-2xl font-bold text-xl transition-all active:scale-95 shadow-lg
-                ${k === "del"
-                  ? "bg-blue-800 text-blue-200 text-base"
-                  : "bg-white bg-opacity-20 text-white hover:bg-opacity-30 border border-white border-opacity-20"
-                }`}
-            >
+                ${k === "del" ? "bg-blue-800 text-blue-200 text-base" : "bg-white bg-opacity-20 text-white hover:bg-opacity-30 border border-white border-opacity-20"}`}>
               {k === "del" ? "⌫" : k}
             </button>
           ))}
@@ -1373,20 +1012,13 @@ function PinScreen({ mode, pinInput, onKey, error, onBack }) {
 // SHARED COMPONENTS
 // ─────────────────────────────────────────────────────────────────────────────
 function Card({ children, className = "" }) {
-  return (
-    <div className={`bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden ${className}`}>
-      {children}
-    </div>
-  );
+  return <div className={`bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden ${className}`}>{children}</div>;
 }
 
 function SectionHeader({ en, ta, icon }) {
   return (
     <div className="mb-6">
-      <h2 className="text-lg font-bold text-gray-900 flex items-center gap-2">
-        {icon && <span className="text-2xl">{icon}</span>}
-        {en}
-      </h2>
+      <h2 className="text-lg font-bold text-gray-900 flex items-center gap-2">{icon && <span className="text-2xl">{icon}</span>}{en}</h2>
       <p className="text-sm text-gray-500" style={{ fontFamily: "'Noto Sans Tamil', sans-serif" }}>{ta}</p>
     </div>
   );
@@ -1403,34 +1035,18 @@ function FieldLabel({ en, ta, required }) {
 
 function Input({ value, onChange, placeholder, type = "text", className = "" }) {
   return (
-    <input
-      type={type}
-      value={value}
-      onChange={e => onChange(e.target.value)}
-      placeholder={placeholder}
-      className={`w-full border border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all bg-gray-50 ${className}`}
-    />
+    <input type={type} value={value} onChange={e => onChange(e.target.value)} placeholder={placeholder}
+      className={`w-full border border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all bg-gray-50 ${className}`} />
   );
 }
 
 function NavButtons({ onBack, onNext, nextLabel = "Next →", nextDisabled = false }) {
   return (
     <div className="flex gap-3 mt-8">
-      {onBack && (
-        <button
-          onClick={onBack}
-          className="flex-1 py-4 rounded-xl border-2 border-gray-200 text-gray-600 font-semibold text-sm active:scale-95 transition-all"
-        >
-          ← Back
-        </button>
-      )}
-      <button
-        onClick={onNext}
-        disabled={nextDisabled}
+      {onBack && <button onClick={onBack} className="flex-1 py-4 rounded-xl border-2 border-gray-200 text-gray-600 font-semibold text-sm active:scale-95 transition-all">← Back</button>}
+      <button onClick={onNext} disabled={nextDisabled}
         style={nextDisabled ? {} : { background: "linear-gradient(135deg, #1B6CA8 0%, #0d4f80 100%)" }}
-        className={`flex-2 flex-grow py-4 rounded-xl text-white font-bold text-sm shadow-lg active:scale-95 transition-all
-          ${nextDisabled ? "bg-gray-300 cursor-not-allowed" : ""}`}
-      >
+        className={`flex-2 flex-grow py-4 rounded-xl text-white font-bold text-sm shadow-lg active:scale-95 transition-all ${nextDisabled ? "bg-gray-300 cursor-not-allowed" : ""}`}>
         {nextLabel}
       </button>
     </div>
@@ -1446,35 +1062,15 @@ function Step1Patient({ data, onChange, onNext }) {
     <div>
       <SectionHeader en="Patient Details" ta="நோயாளி விவரங்கள்" icon="👤" />
       <Card className="p-5 space-y-4">
-        <div>
-          <FieldLabel en="Patient Name" ta="நோயாளியின் பெயர்" required />
-          <Input value={data.name} onChange={v => onChange({ ...data, name: v })} placeholder="Full name" />
-        </div>
-        <div>
-          <FieldLabel en="UHID / Hospital Number" ta="UHID / மருத்துவமனை எண்" required />
-          <Input value={data.uhid} onChange={v => onChange({ ...data, uhid: v })} placeholder="Unique hospital ID" />
-        </div>
+        <div><FieldLabel en="Patient Name" ta="நோயாளியின் பெயர்" required /><Input value={data.name} onChange={v => onChange({ ...data, name: v })} placeholder="Full name" /></div>
+        <div><FieldLabel en="UHID / Hospital Number" ta="UHID / மருத்துவமனை எண்" required /><Input value={data.uhid} onChange={v => onChange({ ...data, uhid: v })} placeholder="Unique hospital ID" /></div>
         <div className="grid grid-cols-2 gap-3">
-          <div>
-            <FieldLabel en="Age (years)" ta="வயது" required />
-            <Input type="number" value={data.age} onChange={v => onChange({ ...data, age: v })} placeholder="Age" />
-          </div>
-          <div>
-            <FieldLabel en="Session No." ta="அமர்வு எண்" />
-            <Input type="number" value={data.sessionNumber} onChange={v => onChange({ ...data, sessionNumber: v })} placeholder="e.g. 1" />
-          </div>
+          <div><FieldLabel en="Age (years)" ta="வயது" required /><Input type="number" value={data.age} onChange={v => onChange({ ...data, age: v })} placeholder="Age" /></div>
+          <div><FieldLabel en="Session No." ta="அமர்வு எண்" /><Input type="number" value={data.sessionNumber} onChange={v => onChange({ ...data, sessionNumber: v })} placeholder="e.g. 1" /></div>
         </div>
         <label className="flex items-start gap-3 p-3 bg-amber-50 border border-amber-200 rounded-xl cursor-pointer">
-          <input
-            type="checkbox"
-            checked={data.paediatric}
-            onChange={e => onChange({ ...data, paediatric: e.target.checked })}
-            className="mt-0.5 w-5 h-5 rounded accent-amber-500"
-          />
-          <div>
-            <span className="text-sm font-semibold text-amber-800">Paediatric Case</span>
-            <p className="text-xs text-amber-600" style={{ fontFamily: "'Noto Sans Tamil', sans-serif" }}>குழந்தை நோயாளி (adds paediatric disclaimer)</p>
-          </div>
+          <input type="checkbox" checked={data.paediatric} onChange={e => onChange({ ...data, paediatric: e.target.checked })} className="mt-0.5 w-5 h-5 rounded accent-amber-500" />
+          <div><span className="text-sm font-semibold text-amber-800">Paediatric Case</span><p className="text-xs text-amber-600" style={{ fontFamily: "'Noto Sans Tamil', sans-serif" }}>குழந்தை நோயாளி (adds paediatric disclaimer)</p></div>
         </label>
       </Card>
       <NavButtons onNext={onNext} nextDisabled={!valid} />
@@ -1491,55 +1087,21 @@ function Step2Doctor({ data, onChange, onBack, onNext }) {
     <div>
       <SectionHeader en="Clinician & Session Details" ta="மருத்துவர் மற்றும் அமர்வு விவரங்கள்" icon="🩺" />
       <Card className="p-5 space-y-4">
-        <div>
-          <FieldLabel en="Doctor Name" ta="மருத்துவரின் பெயர்" required />
-          <Input value={data.name} onChange={v => onChange({ ...data, name: v })} placeholder="Dr. Full Name" />
-        </div>
-        <div>
-          <FieldLabel en="Designation" ta="பதவி" required />
-          <Input value={data.designation} onChange={v => onChange({ ...data, designation: v })} placeholder="e.g. Senior Resident, Consultant" />
-        </div>
-        <div>
-          <FieldLabel en="Registration Number" ta="பதிவு எண்" />
-          <Input value={data.regNumber} onChange={v => onChange({ ...data, regNumber: v })} placeholder="Medical council reg. no." />
-        </div>
-        <div>
-          <FieldLabel en="Ward / Unit" ta="வார்டு / பிரிவு" />
-          <Input value={data.ward} onChange={v => onChange({ ...data, ward: v })} placeholder="e.g. Medical ICU, RICU" />
-        </div>
-        <div>
-          <FieldLabel en="Others Present" ta="இதர நபர்கள்" />
-          <Input value={data.othersPresent} onChange={v => onChange({ ...data, othersPresent: v })} placeholder="e.g. Nursing Sister Name, Resident Name" />
-        </div>
+        <div><FieldLabel en="Doctor Name" ta="மருத்துவரின் பெயர்" required /><Input value={data.name} onChange={v => onChange({ ...data, name: v })} placeholder="Dr. Full Name" /></div>
+        <div><FieldLabel en="Designation" ta="பதவி" required /><Input value={data.designation} onChange={v => onChange({ ...data, designation: v })} placeholder="e.g. Senior Resident, Consultant" /></div>
+        <div><FieldLabel en="Registration Number" ta="பதிவு எண்" /><Input value={data.regNumber} onChange={v => onChange({ ...data, regNumber: v })} placeholder="Medical council reg. no." /></div>
+        <div><FieldLabel en="Ward / Unit" ta="வார்டு / பிரிவு" /><Input value={data.ward} onChange={v => onChange({ ...data, ward: v })} placeholder="e.g. Medical ICU, RICU" /></div>
+        <div><FieldLabel en="Others Present" ta="இதர நபர்கள்" /><Input value={data.othersPresent} onChange={v => onChange({ ...data, othersPresent: v })} placeholder="e.g. Nursing Sister Name, Resident Name" /></div>
         <label className="flex items-start gap-3 p-3 bg-blue-50 border border-blue-200 rounded-xl cursor-pointer">
-          <input
-            type="checkbox"
-            checked={data.interpreterPresent}
-            onChange={e => onChange({ ...data, interpreterPresent: e.target.checked })}
-            className="mt-0.5 w-5 h-5 rounded accent-blue-500"
-          />
-          <div>
-            <span className="text-sm font-semibold text-blue-800">Interpreter Present</span>
-            <p className="text-xs text-blue-600">மொழிபெயர்ப்பாளர் இருந்தார்</p>
-          </div>
+          <input type="checkbox" checked={data.interpreterPresent} onChange={e => onChange({ ...data, interpreterPresent: e.target.checked })} className="mt-0.5 w-5 h-5 rounded accent-blue-500" />
+          <div><span className="text-sm font-semibold text-blue-800">Interpreter Present</span><p className="text-xs text-blue-600">மொழிபெயர்ப்பாளர் இருந்தார்</p></div>
         </label>
         {data.interpreterPresent && (
-          <div>
-            <FieldLabel en="Interpreter Name & Language" ta="மொழிபெயர்ப்பாளர் பெயர் மற்றும் மொழி" />
-            <Input value={data.interpreterName} onChange={v => onChange({ ...data, interpreterName: v })} placeholder="Name — Language" />
-          </div>
+          <div><FieldLabel en="Interpreter Name & Language" ta="மொழிபெயர்ப்பாளர் பெயர் மற்றும் மொழி" /><Input value={data.interpreterName} onChange={v => onChange({ ...data, interpreterName: v })} placeholder="Name — Language" /></div>
         )}
-
-        {/* Voice-enabled session notes — spec: "any free text field" */}
         <div>
           <FieldLabel en="Session Notes (optional)" ta="அமர்வு குறிப்புகள்" />
-          <VoiceTextarea
-            value={data.sessionNotes || ""}
-            onChange={v => onChange({ ...data, sessionNotes: v })}
-            placeholder="Any additional session-specific notes... (voice input supported)"
-            lang="en-IN"
-            rows={2}
-          />
+          <VoiceTextarea value={data.sessionNotes || ""} onChange={v => onChange({ ...data, sessionNotes: v })} placeholder="Any additional session-specific notes..." lang="en-IN" rows={2} />
         </div>
       </Card>
       <NavButtons onBack={onBack} onNext={onNext} nextDisabled={!valid} />
@@ -1550,45 +1112,33 @@ function Step2Doctor({ data, onChange, onBack, onNext }) {
 // ─────────────────────────────────────────────────────────────────────────────
 // STEP 3 — MODULE SELECTION
 // ─────────────────────────────────────────────────────────────────────────────
-function Step3Modules({ selectedModules, expandedModules, setExpandedModules, toggleCondition, setConditionLevel, isConditionSelected, totalSelected, onBack, onNext, onPreview }) {
+function Step3Modules({ contentDB, selectedModules, expandedModules, setExpandedModules, toggleCondition, setConditionLevel, isConditionSelected, totalSelected, onBack, onNext, onPreview }) {
   const toggleModule = (id) => setExpandedModules(prev => ({ ...prev, [id]: !prev[id] }));
 
   return (
     <div>
       <div className="flex items-start justify-between mb-6">
         <div>
-          <h2 className="text-lg font-bold text-gray-900 flex items-center gap-2">
-            <span className="text-2xl">🫀</span> Clinical Conditions
-          </h2>
+          <h2 className="text-lg font-bold text-gray-900 flex items-center gap-2"><span className="text-2xl">🫀</span> Clinical Conditions</h2>
           <p className="text-sm text-gray-500" style={{ fontFamily: "'Noto Sans Tamil', sans-serif" }}>மருத்துவ நிலைகள்</p>
         </div>
         {totalSelected > 0 && (
-          <button
-            onClick={onPreview}
-            className="text-xs bg-blue-100 text-blue-700 border border-blue-300 px-3 py-2 rounded-xl font-semibold"
-          >
-            Preview ({totalSelected})
-          </button>
+          <button onClick={onPreview} className="text-xs bg-blue-100 text-blue-700 border border-blue-300 px-3 py-2 rounded-xl font-semibold">Preview ({totalSelected})</button>
         )}
       </div>
-
       {totalSelected > 0 && (
         <div className="mb-4 bg-blue-50 border border-blue-200 rounded-xl p-3 flex items-center justify-between">
           <span className="text-sm text-blue-700 font-semibold">{totalSelected} condition{totalSelected > 1 ? "s" : ""} selected</span>
           <span className="text-xs text-blue-500">{totalSelected} நிலை தேர்ந்தெடுக்கப்பட்டது</span>
         </div>
       )}
-
       <div className="space-y-3">
         {contentDB.modules.map(module => {
           const isExpanded = !!expandedModules[module.id];
           const moduleSelected = selectedModules[module.id] && Object.keys(selectedModules[module.id]).length > 0;
           return (
             <Card key={module.id} className={moduleSelected ? "border-blue-300 border-2" : ""}>
-              <button
-                onClick={() => toggleModule(module.id)}
-                className="w-full px-5 py-4 flex items-center justify-between text-left"
-              >
+              <button onClick={() => toggleModule(module.id)} className="w-full px-5 py-4 flex items-center justify-between text-left">
                 <div className="flex items-center gap-3">
                   <div className={`w-3 h-3 rounded-full ${moduleSelected ? "bg-blue-500" : "bg-gray-200"}`} />
                   <div>
@@ -1598,7 +1148,6 @@ function Step3Modules({ selectedModules, expandedModules, setExpandedModules, to
                 </div>
                 <span className="text-gray-400 text-sm">{isExpanded ? "▲" : "▼"}</span>
               </button>
-
               {isExpanded && (
                 <div className="border-t border-gray-100 px-5 pb-4 space-y-4">
                   {module.conditions.map(cond => {
@@ -1607,70 +1156,43 @@ function Step3Modules({ selectedModules, expandedModules, setExpandedModules, to
                     return (
                       <div key={cond.id} className={`rounded-xl border transition-all ${selected ? "border-blue-300 bg-blue-50" : "border-gray-100 bg-gray-50"} p-4 mt-3`}>
                         <label className="flex items-start gap-3 cursor-pointer">
-                          <input
-                            type="checkbox"
-                            checked={selected}
-                            onChange={() => toggleCondition(module.id, cond.id)}
-                            className="mt-0.5 w-5 h-5 rounded accent-blue-600"
-                          />
+                          <input type="checkbox" checked={selected} onChange={() => toggleCondition(module.id, cond.id)} className="mt-0.5 w-5 h-5 rounded accent-blue-600" />
                           <div>
                             <p className="font-semibold text-gray-800 text-sm">{cond.keyword.en}</p>
                             <p className="text-xs text-gray-500 mt-0.5" style={{ fontFamily: "'Noto Sans Tamil', sans-serif" }}>{cond.keyword.ta}</p>
                           </div>
                         </label>
-
                         {selected && (
                           <div className="mt-4 space-y-4">
-                            {/* SEVERITY */}
                             <div>
                               <p className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">Severity / தீவிரத்தன்மை</p>
                               <div className="grid grid-cols-2 gap-2">
                                 {Object.entries(SEVERITY_CONFIG).map(([key, cfg]) => (
-                                  <button
-                                    key={key}
-                                    onClick={() => setConditionLevel(module.id, cond.id, "severity", key)}
+                                  <button key={key} onClick={() => setConditionLevel(module.id, cond.id, "severity", key)}
                                     className={`py-2 px-3 rounded-lg text-xs font-semibold border-2 transition-all active:scale-95
-                                      ${selData.severity === key ? cfg.pill + " border-transparent shadow-md" : "border-gray-200 text-gray-600 bg-white hover:border-gray-300"}`}
-                                  >
+                                      ${selData.severity === key ? cfg.pill + " border-transparent shadow-md" : "border-gray-200 text-gray-600 bg-white hover:border-gray-300"}`}>
                                     {cfg.label}<br/><span className="font-normal opacity-75" style={{ fontFamily: "'Noto Sans Tamil', sans-serif" }}>{cfg.ta}</span>
                                   </button>
                                 ))}
                               </div>
                             </div>
-
-                            {/* TRAJECTORY */}
                             <div>
                               <p className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">Trajectory / மருத்துவ போக்கு</p>
                               <div className="grid grid-cols-2 gap-2">
                                 {Object.entries(TRAJECTORY_CONFIG).map(([key, cfg]) => (
-                                  <button
-                                    key={key}
-                                    onClick={() => setConditionLevel(module.id, cond.id, "trajectory", key)}
+                                  <button key={key} onClick={() => setConditionLevel(module.id, cond.id, "trajectory", key)}
                                     className={`py-2 px-3 rounded-lg text-xs font-semibold border-2 transition-all active:scale-95
-                                      ${selData.trajectory === key ? cfg.pill + " border-transparent shadow-md" : "border-gray-200 text-gray-600 bg-white hover:border-gray-300"}`}
-                                  >
+                                      ${selData.trajectory === key ? cfg.pill + " border-transparent shadow-md" : "border-gray-200 text-gray-600 bg-white hover:border-gray-300"}`}>
                                     {cfg.icon} {cfg.label}<br/><span className="font-normal opacity-75" style={{ fontFamily: "'Noto Sans Tamil', sans-serif" }}>{cfg.ta}</span>
                                   </button>
                                 ))}
                               </div>
                             </div>
-
-                            {/* INLINE PREVIEW */}
                             {(selData.severity || selData.trajectory) && (
                               <div className="mt-3 bg-white rounded-lg p-3 border border-blue-200 text-xs space-y-2">
                                 <p className="font-bold text-blue-700 text-xs mb-1">Document Preview:</p>
-                                {selData.severity && (
-                                  <>
-                                    <p className="text-gray-700 leading-relaxed">{cond.severity[selData.severity]?.en}</p>
-                                    <p className="text-gray-600 leading-relaxed" style={{ fontFamily: "'Noto Sans Tamil', sans-serif" }}>{cond.severity[selData.severity]?.ta}</p>
-                                  </>
-                                )}
-                                {selData.trajectory && (
-                                  <>
-                                    <p className="text-gray-700 leading-relaxed mt-2">{cond.trajectory[selData.trajectory]?.en}</p>
-                                    <p className="text-gray-600 leading-relaxed" style={{ fontFamily: "'Noto Sans Tamil', sans-serif" }}>{cond.trajectory[selData.trajectory]?.ta}</p>
-                                  </>
-                                )}
+                                {selData.severity && (<><p className="text-gray-700 leading-relaxed">{cond.severity[selData.severity]?.en}</p><p className="text-gray-600 leading-relaxed" style={{ fontFamily: "'Noto Sans Tamil', sans-serif" }}>{cond.severity[selData.severity]?.ta}</p></>)}
+                                {selData.trajectory && (<><p className="text-gray-700 leading-relaxed mt-2">{cond.trajectory[selData.trajectory]?.en}</p><p className="text-gray-600 leading-relaxed" style={{ fontFamily: "'Noto Sans Tamil', sans-serif" }}>{cond.trajectory[selData.trajectory]?.ta}</p></>)}
                               </div>
                             )}
                           </div>
@@ -1684,7 +1206,6 @@ function Step3Modules({ selectedModules, expandedModules, setExpandedModules, to
           );
         })}
       </div>
-
       <NavButtons onBack={onBack} onNext={onNext} nextDisabled={totalSelected === 0} nextLabel="Next →" />
     </div>
   );
@@ -1693,120 +1214,54 @@ function Step3Modules({ selectedModules, expandedModules, setExpandedModules, to
 // ─────────────────────────────────────────────────────────────────────────────
 // STEP 4 — PROGNOSIS
 // ─────────────────────────────────────────────────────────────────────────────
-// ─────────────────────────────────────────────────────────────────────────────
-// STEP 4 — PROGNOSIS  (Phase 5: full voice dictation on all text fields)
-// ─────────────────────────────────────────────────────────────────────────────
 function Step4Prognosis({ data, onChange, onBack, onNext }) {
   const [voiceLang, setVoiceLang] = useState("ta-IN");
   const selectedPrognosis = PROGNOSIS_LEVELS.find(p => p.id === data.level);
-
   return (
     <div>
       <SectionHeader en="Overall Prognosis" ta="ஒட்டுமொத்த முன்கணிப்பு" icon="📊" />
-
-      {/* PROGNOSIS LEVEL SELECTOR */}
       <Card className="p-5 mb-4">
-        <p className="text-sm font-bold text-gray-700 mb-3">
-          Select Prognosis Level / முன்கணிப்பு அளவு
-        </p>
+        <p className="text-sm font-bold text-gray-700 mb-3">Select Prognosis Level / முன்கணிப்பு அளவு</p>
         <div className="grid grid-cols-2 gap-3">
           {PROGNOSIS_LEVELS.map(p => (
-            <button
-              key={p.id}
-              onClick={() => onChange({ ...data, level: p.id })}
+            <button key={p.id} onClick={() => onChange({ ...data, level: p.id })}
               className={`p-4 rounded-xl border-2 text-left transition-all active:scale-95
-                ${data.level === p.id
-                  ? p.id === "terminal"  ? "border-red-500 bg-red-50"
-                  : p.id === "very_poor" ? "border-orange-500 bg-orange-50"
-                  : p.id === "poor"      ? "border-amber-500 bg-amber-50"
-                  : "border-blue-500 bg-blue-50"
-                  : "border-gray-200 bg-gray-50"}`}
-            >
-              <p className={`font-bold text-sm ${data.level === p.id ? "text-gray-900" : "text-gray-600"}`}>
-                {p.en}
-              </p>
-              <p className="text-xs mt-0.5"
-                style={{ fontFamily: "'Noto Sans Tamil', sans-serif" }}>{p.ta}</p>
+                ${data.level === p.id ? p.id === "terminal" ? "border-red-500 bg-red-50" : p.id === "very_poor" ? "border-orange-500 bg-orange-50" : p.id === "poor" ? "border-amber-500 bg-amber-50" : "border-blue-500 bg-blue-50" : "border-gray-200 bg-gray-50"}`}>
+              <p className={`font-bold text-sm ${data.level === p.id ? "text-gray-900" : "text-gray-600"}`}>{p.en}</p>
+              <p className="text-xs mt-0.5" style={{ fontFamily: "'Noto Sans Tamil', sans-serif" }}>{p.ta}</p>
             </button>
           ))}
         </div>
-
         {selectedPrognosis && (
           <div className="mt-4 p-3 bg-gray-50 rounded-xl border border-gray-200 text-xs space-y-1">
             <p className="text-gray-700 leading-relaxed">{selectedPrognosis.desc_en}</p>
-            <p className="text-gray-600 leading-relaxed"
-              style={{ fontFamily: "'Noto Sans Tamil', sans-serif" }}>
-              {selectedPrognosis.desc_ta}
-            </p>
+            <p className="text-gray-600 leading-relaxed" style={{ fontFamily: "'Noto Sans Tamil', sans-serif" }}>{selectedPrognosis.desc_ta}</p>
           </div>
         )}
       </Card>
-
-      {/* FREE TEXT — bilingual, both fields voice-enabled */}
       <Card className="p-5 mb-4">
-        {/* Language selector for voice */}
         <div className="flex items-center justify-between mb-3">
           <p className="text-sm font-bold text-gray-700">Additional Prognosis Details</p>
           <VoiceLangSelector lang={voiceLang} onLangChange={setVoiceLang} />
         </div>
-
-        {/* English free text */}
         <div className="mb-4">
-          <FieldLabel
-            en="English notes"
-            ta="ஆங்கில குறிப்புகள்"
-          />
-          <VoiceTextarea
-            value={data.freeTextEn}
-            onChange={v => onChange({ ...data, freeTextEn: v })}
-            placeholder="Additional clinical notes in English..."
-            lang="en-IN"
-            rows={3}
-          />
+          <FieldLabel en="English notes" ta="ஆங்கில குறிப்புகள்" />
+          <VoiceTextarea value={data.freeTextEn} onChange={v => onChange({ ...data, freeTextEn: v })} placeholder="Additional clinical notes in English..." lang="en-IN" rows={3} />
         </div>
-
-        {/* Tamil free text — default voice target */}
         <div>
-          <FieldLabel
-            en="Tamil notes (voice-enabled)"
-            ta="தமிழ் குறிப்புகள் — குரல் உள்ளீடு"
-          />
-          <VoiceTextarea
-            value={data.freeTextTa}
-            onChange={v => onChange({ ...data, freeTextTa: v })}
-            placeholder="தமிழில் கூடுதல் குறிப்புகள்... (மேலே உள்ள 🎤 ஐ அழுத்தவும்)"
-            lang="ta-IN"
-            rows={3}
-          />
+          <FieldLabel en="Tamil notes (voice-enabled)" ta="தமிழ் குறிப்புகள் — குரல் உள்ளீடு" />
+          <VoiceTextarea value={data.freeTextTa} onChange={v => onChange({ ...data, freeTextTa: v })} placeholder="தமிழில் கூடுதல் குறிப்புகள்..." lang="ta-IN" rows={3} />
         </div>
       </Card>
-
-      {/* CLINICAL SCORES */}
       <Card className="p-5">
         <p className="text-sm font-bold text-gray-700 mb-1">Clinical Scores (Optional)</p>
-        <p className="text-xs text-gray-400 mb-4">
-          Score calculators available in Version 2. Enter manually if known.
-        </p>
+        <p className="text-xs text-gray-400 mb-4">Score calculators available in Version 2. Enter manually if known.</p>
         <div className="grid grid-cols-2 gap-3">
-          {Object.entries({
-            SOFA: "SOFA Score",
-            APACHE_II: "APACHE II",
-            GCS: "GCS",
-            qSOFA: "qSOFA",
-          }).map(([key, label]) => (
-            <div key={key}>
-              <FieldLabel en={label} />
-              <Input
-                type="number"
-                value={data.scores[key]}
-                onChange={v => onChange({ ...data, scores: { ...data.scores, [key]: v } })}
-                placeholder="—"
-              />
-            </div>
+          {Object.entries({ SOFA: "SOFA Score", APACHE_II: "APACHE II", GCS: "GCS", qSOFA: "qSOFA" }).map(([key, label]) => (
+            <div key={key}><FieldLabel en={label} /><Input type="number" value={data.scores[key]} onChange={v => onChange({ ...data, scores: { ...data.scores, [key]: v } })} placeholder="—" /></div>
           ))}
         </div>
       </Card>
-
       <NavButtons onBack={onBack} onNext={onNext} />
     </div>
   );
@@ -1820,16 +1275,10 @@ function Step5Consent({ checks, setChecks, refusal, setRefusal, onBack, onNext }
     <div>
       <SectionHeader en="Consent Statements" ta="சம்மத அறிக்கைகள்" icon="📋" />
       <p className="text-xs text-gray-500 mb-4">All statements are pre-checked. Uncheck if not applicable.</p>
-
       <Card className="p-5 mb-4 space-y-4">
         {CONSENT_STATEMENTS.map((s, i) => (
           <label key={s.id} className={`flex items-start gap-3 p-3 rounded-xl cursor-pointer border transition-all ${checks[s.id] ? "bg-green-50 border-green-200" : "bg-gray-50 border-gray-200"}`}>
-            <input
-              type="checkbox"
-              checked={!!checks[s.id]}
-              onChange={e => setChecks({ ...checks, [s.id]: e.target.checked })}
-              className="mt-0.5 w-5 h-5 rounded accent-green-500"
-            />
+            <input type="checkbox" checked={!!checks[s.id]} onChange={e => setChecks({ ...checks, [s.id]: e.target.checked })} className="mt-0.5 w-5 h-5 rounded accent-green-500" />
             <div>
               <p className="text-sm text-gray-800 leading-relaxed">{i + 1}. {s.en}</p>
               <p className="text-xs text-gray-500 mt-1 leading-relaxed" style={{ fontFamily: "'Noto Sans Tamil', sans-serif" }}>{s.ta}</p>
@@ -1837,15 +1286,9 @@ function Step5Consent({ checks, setChecks, refusal, setRefusal, onBack, onNext }
           </label>
         ))}
       </Card>
-
       <Card className="p-5">
         <label className="flex items-start gap-3 cursor-pointer">
-          <input
-            type="checkbox"
-            checked={refusal.documented}
-            onChange={e => setRefusal({ ...refusal, documented: e.target.checked })}
-            className="mt-0.5 w-5 h-5 rounded accent-red-500"
-          />
+          <input type="checkbox" checked={refusal.documented} onChange={e => setRefusal({ ...refusal, documented: e.target.checked })} className="mt-0.5 w-5 h-5 rounded accent-red-500" />
           <div>
             <p className="text-sm font-semibold text-red-700">Document Refusal to Sign</p>
             <p className="text-xs text-red-500" style={{ fontFamily: "'Noto Sans Tamil', sans-serif" }}>கையொப்பமிட மறுத்தல் ஆவணப்படுத்தல்</p>
@@ -1854,18 +1297,10 @@ function Step5Consent({ checks, setChecks, refusal, setRefusal, onBack, onNext }
         {refusal.documented && (
           <div className="mt-4">
             <FieldLabel en="Reason for refusal / circumstances" ta="மறுப்புக்கான காரணம்" />
-            <VoiceTextarea
-              value={refusal.reason}
-              onChange={v => setRefusal({ ...refusal, reason: v })}
-              placeholder="Describe the circumstances of refusal..."
-              lang="en-IN"
-              rows={3}
-              className="border-red-200 bg-red-50 focus:ring-red-400"
-            />
+            <VoiceTextarea value={refusal.reason} onChange={v => setRefusal({ ...refusal, reason: v })} placeholder="Describe the circumstances of refusal..." lang="en-IN" rows={3} className="border-red-200 bg-red-50 focus:ring-red-400" />
           </div>
         )}
       </Card>
-
       <NavButtons onBack={onBack} onNext={onNext} />
     </div>
   );
@@ -1879,16 +1314,9 @@ function Step6Signatory({ data, onChange, onBack, onNext }) {
     <div>
       <SectionHeader en="Signatory Details" ta="கையொப்பமிட்டவர் விவரங்கள்" icon="✍️" />
       <Card className="p-5 space-y-4 mb-4">
-        <div>
-          <FieldLabel en="Signatory Name" ta="கையொப்பமிட்டவர் பெயர்" />
-          <Input value={data.name} onChange={v => onChange({ ...data, name: v })} placeholder="Name of person signing" />
-        </div>
-        <div>
-          <FieldLabel en="Relationship to Patient" ta="நோயாளியுடனான உறவு" />
-          <Input value={data.relationship} onChange={v => onChange({ ...data, relationship: v })} placeholder="e.g. Son, Daughter, Spouse" />
-        </div>
+        <div><FieldLabel en="Signatory Name" ta="கையொப்பமிட்டவர் பெயர்" /><Input value={data.name} onChange={v => onChange({ ...data, name: v })} placeholder="Name of person signing" /></div>
+        <div><FieldLabel en="Relationship to Patient" ta="நோயாளியுடனான உறவு" /><Input value={data.relationship} onChange={v => onChange({ ...data, relationship: v })} placeholder="e.g. Son, Daughter, Spouse" /></div>
       </Card>
-
       <Card className="p-5 mb-4">
         <p className="text-sm font-semibold text-gray-700 mb-3">Signature Mode</p>
         <div className="p-3 bg-blue-50 border border-blue-200 rounded-xl">
@@ -1897,48 +1325,29 @@ function Step6Signatory({ data, onChange, onBack, onNext }) {
         </div>
         <p className="text-xs text-gray-400 mt-2">Digital signature pad available in Version 2</p>
       </Card>
-
       <Card className="p-5 space-y-4">
-        <div>
-          <FieldLabel en="Witness Name" ta="சாட்சி பெயர்" />
-          <Input value={data.witnessName} onChange={v => onChange({ ...data, witnessName: v })} placeholder="Witness full name" />
-        </div>
-        <div>
-          <FieldLabel en="Witness Designation" ta="சாட்சி பதவி" />
-          <Input value={data.witnessDesignation} onChange={v => onChange({ ...data, witnessDesignation: v })} placeholder="e.g. Staff Nurse, Resident Doctor" />
-        </div>
+        <div><FieldLabel en="Witness Name" ta="சாட்சி பெயர்" /><Input value={data.witnessName} onChange={v => onChange({ ...data, witnessName: v })} placeholder="Witness full name" /></div>
+        <div><FieldLabel en="Witness Designation" ta="சாட்சி பதவி" /><Input value={data.witnessDesignation} onChange={v => onChange({ ...data, witnessDesignation: v })} placeholder="e.g. Staff Nurse, Resident Doctor" /></div>
       </Card>
-
       <NavButtons onBack={onBack} onNext={onNext} nextLabel="Generate Document →" />
     </div>
   );
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-// PHASE 4 — PDF ENGINE
-// Calls /api/generate-pdf (Python/ReportLab backend) and triggers download.
-// Falls back to browser print if the endpoint is unavailable.
-// In production: POST JSON → receive PDF blob → save to device.
+// PDF ENGINE
 // ─────────────────────────────────────────────────────────────────────────────
 async function generatePDF(payload, filename) {
   try {
-    //const res = await fetch("/api/generate-pdf", {
-    const res = await fetch("/api/generate-docx", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(payload),
-    });
+    const res = await fetch("/api/generate-docx", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(payload) });
     if (!res.ok) throw new Error(`API ${res.status}`);
     const blob = await res.blob();
     const url  = URL.createObjectURL(blob);
     const a    = document.createElement("a");
-    a.href     = url;
-    a.download = filename;
-    a.click();
+    a.href = url; a.download = filename; a.click();
     URL.revokeObjectURL(url);
     return "downloaded";
   } catch {
-    // Graceful fallback → browser print dialog
     window.print();
     return "printed";
   }
@@ -1947,168 +1356,81 @@ async function generatePDF(payload, filename) {
 function composeEmail(payload, filename, printerEmail) {
   const { patientData, doctorData } = payload;
   const today = formatDate();
-  const to      = encodeURIComponent(printerEmail || "");
-  const subject = encodeURIComponent(
-    `ICU Consent — ${patientData.name || "Patient"} — UHID ${patientData.uhid || "—"} — ${today}`
-  );
-  const body = encodeURIComponent(
-    `Dear Team,\n\nPlease find attached the ICU Prognosis Consent document:\n\n` +
-    `Patient  : ${patientData.name || "—"}\nUHID     : ${patientData.uhid || "—"}\n` +
-    `Age      : ${patientData.age || "—"} yrs\nSession  : ${patientData.sessionNumber || "—"}\n` +
-    `Doctor   : ${doctorData.name || "—"} — ${doctorData.designation || "—"}\n` +
-    `Ward     : ${doctorData.ward || "—"}\nDate     : ${today}\n\n` +
-    `File: ${filename}\nPlease attach the downloaded PDF to this email.\n\n` +
-    `IMPORTANT: Ensure the printed, signed copy is filed in the patient's physical medical record.\n\n` +
-    `— ICU Consent App v1.0 —`
-  );
+  const to = encodeURIComponent(printerEmail || "");
+  const subject = encodeURIComponent(`ICU Consent — ${patientData.name || "Patient"} — UHID ${patientData.uhid || "—"} — ${today}`);
+  const body = encodeURIComponent(`Dear Team,\n\nPlease find attached the ICU Prognosis Consent document:\n\nPatient  : ${patientData.name || "—"}\nUHID     : ${patientData.uhid || "—"}\nAge      : ${patientData.age || "—"} yrs\nSession  : ${patientData.sessionNumber || "—"}\nDoctor   : ${doctorData.name || "—"} — ${doctorData.designation || "—"}\nWard     : ${doctorData.ward || "—"}\nDate     : ${today}\n\nFile: ${filename}\nPlease attach the downloaded PDF to this email.\n\nIMPORTANT: Ensure the printed, signed copy is filed in the patient's physical medical record.\n\n— ICU Consent App v1.0 —`);
   window.location.href = `mailto:${to}?subject=${subject}&body=${body}`;
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-// STEP 7 — EXPORT  (Phase 4)
+// STEP 7 — EXPORT
 // ─────────────────────────────────────────────────────────────────────────────
-function Step7Export({
-  patientData, doctorData, selectedModules, prognosisData,
-  consentChecks, refusal, signatoryData,
-  onBack, onPreview, onNewPatient,
-  contentDB, consentStatements, prognosisLevels,
-}) {
+function Step7Export({ patientData, doctorData, selectedModules, prognosisData, consentChecks, refusal, signatoryData, onBack, onPreview, onNewPatient, contentDB, consentStatements, prognosisLevels }) {
   const docId    = useRef(generateUUID().split("-")[0].toUpperCase());
-//  const filename = `ICU_Consent_${patientData.uhid || "NOID"}_${formatDate().replace(/\//g, "-")}_Session${patientData.sessionNumber || "1"}.pdf`;
   const filename = `ICU_Consent_${patientData.uhid || "NOID"}_${formatDate().replace(/\//g, "-")}_Session${patientData.sessionNumber || "1"}.docx`;
 
-
-  // ── hospital header toggle ──────────────────────────────────────────────
   const [showHeaderModal, setShowHeaderModal] = useState(false);
   const [hospitalName, setHospitalName]       = useState("");
   const [includeHeader, setIncludeHeader]     = useState(false);
-  const [pendingAction, setPendingAction]     = useState(null); // "pdf" | "print" | "email"
-
-  // ── email ────────────────────────────────────────────────────────────────
+  const [pendingAction, setPendingAction]     = useState(null);
   const [showEmailRow, setShowEmailRow]       = useState(false);
   const [printerEmail, setPrinterEmail]       = useState("");
+  const [status, setStatus]                   = useState("idle");
 
-  // ── status ───────────────────────────────────────────────────────────────
-  const [status, setStatus] = useState("idle"); // idle | working | done_dl | done_pr | error
+  const buildPayload = (inclHdr) => ({ patientData, doctorData, selectedModules, prognosisData, consentChecks, refusal, signatoryData, hospitalName: inclHdr ? hospitalName : "", includeHospitalHeader: inclHdr, docId: docId.current, contentDB, consentStatements, prognosisLevels });
 
-  const buildPayload = (inclHdr) => ({
-    patientData, doctorData, selectedModules, prognosisData,
-    consentChecks, refusal, signatoryData,
-    hospitalName: inclHdr ? hospitalName : "",
-    includeHospitalHeader: inclHdr,
-    docId: docId.current,
-    contentDB,
-    consentStatements,
-    prognosisLevels,
-  });
-
-  const initiateAction = (action) => {
-    setPendingAction(action);
-    setShowHeaderModal(true);
-  };
+  const initiateAction = (action) => { setPendingAction(action); setShowHeaderModal(true); };
 
   const proceed = async (inclHdr) => {
     setShowHeaderModal(false);
     const payload = buildPayload(inclHdr);
-
-    if (pendingAction === "print") {
-      window.print();
-      return;
-    }
-    if (pendingAction === "email") {
-      setStatus("working");
-      await generatePDF(payload, filename);
-      composeEmail(payload, filename, printerEmail);
-      setStatus("done_dl");
-      return;
-    }
-    // "pdf"
+    if (pendingAction === "print") { window.print(); return; }
+    if (pendingAction === "email") { setStatus("working"); await generatePDF(payload, filename); composeEmail(payload, filename, printerEmail); setStatus("done_dl"); return; }
     setStatus("working");
     const result = await generatePDF(payload, filename);
     setStatus(result === "downloaded" ? "done_dl" : "done_pr");
   };
 
   const StatusBanner = () => {
-    if (status === "working")  return (
-      <div className="flex items-center gap-3 p-3 bg-blue-50 border border-blue-200 rounded-xl mb-3">
-        <div className="w-5 h-5 border-2 border-blue-500 border-t-transparent rounded-full animate-spin flex-shrink-0" />
-        <div>
-          <p className="text-sm font-semibold text-blue-700">Generating PDF…</p>
-          <p className="text-xs text-blue-500">ReportLab rendering bilingual document with Tamil font.</p>
-        </div>
-      </div>
-    );
-    if (status === "done_dl") return (
-      <div className="p-3 bg-green-50 border border-green-200 rounded-xl mb-3">
-        <p className="text-sm font-semibold text-green-700">✅ PDF downloaded!</p>
-        <p className="text-xs text-green-600 mt-0.5">{filename}</p>
-      </div>
-    );
-    if (status === "done_pr") return (
-      <div className="p-3 bg-blue-50 border border-blue-200 rounded-xl mb-3">
-        <p className="text-sm font-semibold text-blue-700">🖨 Print dialog opened.</p>
-      </div>
-    );
-    if (status === "error") return (
-      <div className="p-3 bg-red-50 border border-red-200 rounded-xl mb-3">
-        <p className="text-sm font-semibold text-red-700">⚠ PDF API unavailable — print dialog used as fallback.</p>
-      </div>
-    );
+    if (status === "working") return <div className="flex items-center gap-3 p-3 bg-blue-50 border border-blue-200 rounded-xl mb-3"><div className="w-5 h-5 border-2 border-blue-500 border-t-transparent rounded-full animate-spin flex-shrink-0" /><p className="text-sm font-semibold text-blue-700">Generating document…</p></div>;
+    if (status === "done_dl") return <div className="p-3 bg-green-50 border border-green-200 rounded-xl mb-3"><p className="text-sm font-semibold text-green-700">✅ Downloaded: {filename}</p></div>;
+    if (status === "done_pr") return <div className="p-3 bg-blue-50 border border-blue-200 rounded-xl mb-3"><p className="text-sm font-semibold text-blue-700">🖨 Print dialog opened.</p></div>;
     return null;
   };
 
   return (
     <div>
-      {/* ── HOSPITAL HEADER MODAL ──────────────────────────────────────────── */}
       {showHeaderModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 p-4">
           <div className="bg-white rounded-2xl shadow-2xl max-w-sm w-full p-6">
             <h3 className="font-bold text-gray-900 mb-1">Include hospital header?</h3>
-            <p className="text-xs text-gray-500 mb-4">Applies to this export only. Selection is remembered for the session.</p>
+            <p className="text-xs text-gray-500 mb-4">Applies to this export only.</p>
             <div className="space-y-3 mb-5">
               <label className="flex items-start gap-3 p-3 border-2 border-blue-200 rounded-xl cursor-pointer bg-blue-50">
-                <input type="radio" name="hm" checked={includeHeader}
-                  onChange={() => setIncludeHeader(true)} className="mt-1 accent-blue-600 w-4 h-4" />
+                <input type="radio" name="hm" checked={includeHeader} onChange={() => setIncludeHeader(true)} className="mt-1 accent-blue-600 w-4 h-4" />
                 <div className="flex-1">
                   <p className="font-semibold text-sm text-blue-900">Yes — include hospital name</p>
-                  {includeHeader && (
-                    <input autoFocus value={hospitalName} onChange={e => setHospitalName(e.target.value)}
-                      placeholder="Type hospital name…"
-                      className="mt-2 w-full border border-blue-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white" />
-                  )}
+                  {includeHeader && <input autoFocus value={hospitalName} onChange={e => setHospitalName(e.target.value)} placeholder="Type hospital name…" className="mt-2 w-full border border-blue-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white" />}
                 </div>
               </label>
               <label className="flex items-center gap-3 p-3 border-2 border-gray-200 rounded-xl cursor-pointer">
-                <input type="radio" name="hm" checked={!includeHeader}
-                  onChange={() => setIncludeHeader(false)} className="accent-blue-600 w-4 h-4" />
+                <input type="radio" name="hm" checked={!includeHeader} onChange={() => setIncludeHeader(false)} className="accent-blue-600 w-4 h-4" />
                 <p className="font-semibold text-sm text-gray-700">No — generic header only</p>
               </label>
             </div>
             <div className="grid grid-cols-2 gap-3">
-              <button onClick={() => setShowHeaderModal(false)}
-                className="py-3 rounded-xl border-2 border-gray-200 text-gray-600 font-semibold text-sm">
-                Cancel
-              </button>
-              <button onClick={() => proceed(includeHeader)}
-                style={{ background: "linear-gradient(135deg,#1B6CA8,#0d4f80)" }}
-                className="py-3 rounded-xl text-white font-bold text-sm">
-                Continue →
-              </button>
+              <button onClick={() => setShowHeaderModal(false)} className="py-3 rounded-xl border-2 border-gray-200 text-gray-600 font-semibold text-sm">Cancel</button>
+              <button onClick={() => proceed(includeHeader)} style={{ background: "linear-gradient(135deg,#1B6CA8,#0d4f80)" }} className="py-3 rounded-xl text-white font-bold text-sm">Continue →</button>
             </div>
           </div>
         </div>
       )}
 
       <SectionHeader en="Document Ready" ta="ஆவணம் தயார்" icon="📄" />
-
-      {/* SUMMARY */}
       <Card className="p-5 mb-4">
         <div className="flex items-center gap-3 mb-4">
           <div className="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center text-2xl">✅</div>
-          <div className="min-w-0">
-            <p className="font-bold text-gray-900">Document Ready</p>
-            <p className="text-xs text-gray-500 truncate">{filename}</p>
-          </div>
+          <div className="min-w-0"><p className="font-bold text-gray-900">Document Ready</p><p className="text-xs text-gray-500 truncate">{filename}</p></div>
         </div>
         <div className="bg-gray-50 rounded-xl p-3 text-xs text-gray-600 space-y-1">
           <p><span className="font-semibold">Patient:</span> {patientData.name || "—"} · UHID: {patientData.uhid || "—"}</p>
@@ -2117,218 +1439,113 @@ function Step7Export({
         </div>
       </Card>
 
-      {/* EXPORT OPTIONS */}
       <Card className="p-5 mb-4">
         <p className="text-sm font-bold text-gray-700 mb-3">Export Options</p>
         <StatusBanner />
         <div className="space-y-3">
-
-          {/* Preview */}
-          <button onClick={onPreview}
-            style={{ background: "linear-gradient(135deg,#1B6CA8,#0d4f80)" }}
-            className="w-full py-4 rounded-xl text-white font-bold text-sm shadow-lg active:scale-95 transition-all flex items-center justify-center gap-2">
-            👁 &nbsp;Preview Full Document
-          </button>
-
-          {/* Print */}
-          <button onClick={() => initiateAction("print")} disabled={status === "working"}
-            className="w-full py-4 rounded-xl border-2 border-blue-600 text-blue-700 font-bold text-sm active:scale-95 transition-all flex items-center justify-center gap-2 disabled:opacity-50">
-            🖨 &nbsp;Print Document
-          </button>
-
-          {/* Download PDF */}
-          <button onClick={() => initiateAction("pdf")} disabled={status === "working"}
-            className="w-full py-4 rounded-xl border-2 border-emerald-500 text-emerald-700 font-bold text-sm active:scale-95 transition-all flex items-center justify-center gap-2 disabled:opacity-50">
-            📥 &nbsp;Download PDF
-            <span className="text-xs font-normal text-emerald-400 ml-1">ReportLab · Tamil embedded</span>
-          </button>
-
-          {/* Email */}
+          <button onClick={onPreview} style={{ background: "linear-gradient(135deg,#1B6CA8,#0d4f80)" }} className="w-full py-4 rounded-xl text-white font-bold text-sm shadow-lg active:scale-95 transition-all flex items-center justify-center gap-2">👁 &nbsp;Preview Full Document</button>
+          <button onClick={() => initiateAction("print")} disabled={status === "working"} className="w-full py-4 rounded-xl border-2 border-blue-600 text-blue-700 font-bold text-sm active:scale-95 transition-all flex items-center justify-center gap-2 disabled:opacity-50">🖨 &nbsp;Print Document</button>
+          <button onClick={() => initiateAction("pdf")} disabled={status === "working"} className="w-full py-4 rounded-xl border-2 border-emerald-500 text-emerald-700 font-bold text-sm active:scale-95 transition-all flex items-center justify-center gap-2 disabled:opacity-50">📥 &nbsp;Download Document</button>
           <div>
-            <button onClick={() => setShowEmailRow(r => !r)} disabled={status === "working"}
-              className="w-full py-4 rounded-xl border-2 border-gray-300 text-gray-600 font-bold text-sm active:scale-95 transition-all flex items-center justify-center gap-2 disabled:opacity-50">
-              📧 &nbsp;Email to Printer / MRD
-              <span className="text-gray-400 text-sm">{showEmailRow ? "▲" : "▼"}</span>
+            <button onClick={() => setShowEmailRow(r => !r)} disabled={status === "working"} className="w-full py-4 rounded-xl border-2 border-gray-300 text-gray-600 font-bold text-sm active:scale-95 transition-all flex items-center justify-center gap-2 disabled:opacity-50">
+              📧 &nbsp;Email to Printer / MRD <span className="text-gray-400 text-sm">{showEmailRow ? "▲" : "▼"}</span>
             </button>
             {showEmailRow && (
               <div className="mt-2 p-4 bg-gray-50 border border-gray-200 rounded-xl space-y-3">
                 <div>
                   <label className="block text-xs font-semibold text-gray-600 mb-1">Printer / MRD email address</label>
-                  <input type="email" value={printerEmail} onChange={e => setPrinterEmail(e.target.value)}
-                    placeholder="printer@hospital.in"
-                    className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-blue-500" />
+                  <input type="email" value={printerEmail} onChange={e => setPrinterEmail(e.target.value)} placeholder="printer@hospital.in" className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-blue-500" />
                 </div>
-                <p className="text-xs text-gray-400 leading-relaxed">
-                  Downloads PDF then opens your email client with the document details pre-filled.
-                  Attach the downloaded PDF manually. MRD CC address configurable in Admin Settings (Phase 6).
-                </p>
-                <button onClick={() => initiateAction("email")} disabled={status === "working"}
-                  style={{ background: "linear-gradient(135deg,#1B6CA8,#0d4f80)" }}
-                  className="w-full py-3 rounded-xl text-white font-bold text-sm active:scale-95 transition-all disabled:opacity-50">
-                  📧 &nbsp;Download PDF &amp; Compose Email
-                </button>
+                <button onClick={() => initiateAction("email")} disabled={status === "working"} style={{ background: "linear-gradient(135deg,#1B6CA8,#0d4f80)" }} className="w-full py-3 rounded-xl text-white font-bold text-sm active:scale-95 transition-all disabled:opacity-50">📧 &nbsp;Download &amp; Compose Email</button>
               </div>
             )}
           </div>
         </div>
       </Card>
 
-      {/* REMINDER */}
       <div className="bg-amber-50 border border-amber-300 rounded-xl p-4 mb-4">
         <p className="text-sm font-bold text-amber-800 mb-1">⚠ Important Reminder</p>
-        <p className="text-xs text-amber-700 leading-relaxed">
-          Ensure the printed document is <strong>signed by the patient or next of kin</strong> and <strong>filed in the physical medical record</strong> before clearing this session.
-          Date and time fields are intentionally blank — to be handwritten by the clinician at time of signing.
-        </p>
-        <p className="text-xs text-amber-600 mt-2" style={{ fontFamily: "'Noto Sans Tamil', sans-serif" }}>
-          அச்சிட்ட ஆவணத்தில் கையொப்பம் பெற்று நோயாளியின் மருத்துவ பதிவில் சேர்க்கவும்.
-        </p>
+        <p className="text-xs text-amber-700 leading-relaxed">Ensure the printed document is <strong>signed by the patient or next of kin</strong> and <strong>filed in the physical medical record</strong> before clearing this session. Date and time fields are intentionally blank — to be handwritten by the clinician at time of signing.</p>
+        <p className="text-xs text-amber-600 mt-2" style={{ fontFamily: "'Noto Sans Tamil', sans-serif" }}>அச்சிட்ட ஆவணத்தில் கையொப்பம் பெற்று நோயாளியின் மருத்துவ பதிவில் சேர்க்கவும்.</p>
       </div>
 
-      {/* NAV */}
       <div className="grid grid-cols-2 gap-3">
-        <button onClick={onBack}
-          className="py-4 rounded-xl border-2 border-gray-200 text-gray-600 font-semibold text-sm active:scale-95 transition-all">
-          ← Back
-        </button>
-        <button
-          onClick={() => { if (window.confirm("Start a new patient session? Current data will be cleared.")) onNewPatient(); }}
-          className="py-4 rounded-xl border-2 border-blue-300 text-blue-700 font-bold text-sm active:scale-95 transition-all">
-          New Patient +
-        </button>
+        <button onClick={onBack} className="py-4 rounded-xl border-2 border-gray-200 text-gray-600 font-semibold text-sm active:scale-95 transition-all">← Back</button>
+        <button onClick={() => { if (window.confirm("Start a new patient session? Current data will be cleared.")) onNewPatient(); }} className="py-4 rounded-xl border-2 border-blue-300 text-blue-700 font-bold text-sm active:scale-95 transition-all">New Patient +</button>
       </div>
-
-      <button
-        onClick={() => {
-          if (window.confirm(
-            "DISCHARGE & CLEAR\n\nPlease ensure all printed signed copies are filed in the patient's physical medical record.\n\nConfirm and clear all session data?"
-          )) onNewPatient();
-        }}
-        className="w-full mt-3 py-4 rounded-xl border-2 border-red-300 text-red-600 font-bold text-sm active:scale-95 transition-all">
-        🗑 Discharge &amp; Clear Patient Data
-      </button>
+      <button onClick={() => { if (window.confirm("DISCHARGE & CLEAR\n\nPlease ensure all printed signed copies are filed in the patient's physical medical record.\n\nConfirm and clear all session data?")) onNewPatient(); }} className="w-full mt-3 py-4 rounded-xl border-2 border-red-300 text-red-600 font-bold text-sm active:scale-95 transition-all">🗑 Discharge &amp; Clear Patient Data</button>
     </div>
   );
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-// PREVIEW SCREEN — Phase 4
-// Inline editing · Hospital header toggle · Download PDF · Print
+// PREVIEW SCREEN
 // ─────────────────────────────────────────────────────────────────────────────
-function PreviewScreen({ patientData, doctorData, selectedModules, prognosisData, consentChecks, refusal, signatoryData, onClose }) {
+function PreviewScreen({ patientData, doctorData, selectedModules, prognosisData, consentChecks, refusal, signatoryData, contentDB, onClose }) {
   const docId = useRef(generateUUID().split("-")[0].toUpperCase()).current;
   const today = formatDate();
-  //const filename = `ICU_Consent_${patientData.uhid || "NOID"}_${today.replace(/\//g, "-")}_Session${patientData.sessionNumber || "1"}.pdf`;
   const filename = `ICU_Consent_${patientData.uhid || "NOID"}_${today.replace(/\//g, "-")}_Session${patientData.sessionNumber || "1"}.docx`;
 
+  const selectedPrognosis = PROGNOSIS_LEVELS.find(p => p.id === prognosisData.level);
+  const hasScores         = Object.values(prognosisData.scores || {}).some(v => v !== "");
+  const activeConsents    = CONSENT_STATEMENTS.filter(s => consentChecks[s.id]);
 
-  const selectedPrognosis  = PROGNOSIS_LEVELS.find(p => p.id === prognosisData.level);
-  const hasScores          = Object.values(prognosisData.scores || {}).some(v => v !== "");
-  const activeConsents     = CONSENT_STATEMENTS.filter(s => consentChecks[s.id]);
-
-  // ── Phase 4 controls ────────────────────────────────────────────────────
-  const [editMode, setEditMode]       = useState(false);
-  const [editNotes, setEditNotes]     = useState("");
-  const [inclHeader, setInclHeader]   = useState(false);
-  const [hospName, setHospName]       = useState("");
-  const [pdfStatus, setPdfStatus]     = useState("idle"); // idle|working|done|error
+  const [editMode, setEditMode]     = useState(false);
+  const [editNotes, setEditNotes]   = useState("");
+  const [inclHeader, setInclHeader] = useState(false);
+  const [hospName, setHospName]     = useState("");
+  const [pdfStatus, setPdfStatus]   = useState("idle");
 
   const handleDownload = async () => {
     setPdfStatus("working");
-    const payload = {
-      patientData, doctorData, selectedModules, prognosisData,
-      consentChecks, refusal, signatoryData,
-      hospitalName: inclHeader ? hospName : "",
-      includeHospitalHeader: inclHeader,
-      docId,
-      contentDB: contentDB,
-      consentStatements: CONSENT_STATEMENTS,
-      prognosisLevels: PROGNOSIS_LEVELS,
-    };
+    const payload = { patientData, doctorData, selectedModules, prognosisData, consentChecks, refusal, signatoryData, hospitalName: inclHeader ? hospName : "", includeHospitalHeader: inclHeader, docId, contentDB, consentStatements: CONSENT_STATEMENTS, prognosisLevels: PROGNOSIS_LEVELS };
     const result = await generatePDF(payload, filename);
     setPdfStatus(result === "downloaded" ? "done" : "printed");
   };
 
   return (
     <div className="fixed inset-0 z-50 bg-white overflow-y-auto">
-
-      {/* ── TOP BAR ── */}
-      <div style={{ background: "linear-gradient(135deg,#1B6CA8,#0d4f80)" }}
-        className="sticky top-0 z-10 text-white px-4 py-3 shadow-lg print:hidden">
+      <div style={{ background: "linear-gradient(135deg,#1B6CA8,#0d4f80)" }} className="sticky top-0 z-10 text-white px-4 py-3 shadow-lg print:hidden">
         <div className="max-w-2xl mx-auto">
           <div className="flex items-center justify-between gap-2 mb-2">
             <button onClick={onClose} className="font-semibold text-sm flex-shrink-0">← Back</button>
             <h2 className="font-bold text-sm">Document Preview</h2>
             <div className="flex gap-2">
-              <button onClick={() => setEditMode(e => !e)}
-                className={`text-xs px-3 py-1.5 rounded-lg font-bold transition-all ${editMode ? "bg-amber-400 text-amber-900" : "bg-white bg-opacity-20 text-white"}`}>
-                {editMode ? "✓ Editing" : "✏ Edit"}
-              </button>
-              <button onClick={() => window.print()}
-                className="text-xs bg-white bg-opacity-20 px-3 py-1.5 rounded-lg font-bold">
-                🖨 Print
-              </button>
+              <button onClick={() => setEditMode(e => !e)} className={`text-xs px-3 py-1.5 rounded-lg font-bold transition-all ${editMode ? "bg-amber-400 text-amber-900" : "bg-white bg-opacity-20 text-white"}`}>{editMode ? "✓ Editing" : "✏ Edit"}</button>
+              <button onClick={() => window.print()} className="text-xs bg-white bg-opacity-20 px-3 py-1.5 rounded-lg font-bold">🖨 Print</button>
             </div>
           </div>
-          {/* Hospital header row */}
           <div className="flex items-center gap-3 bg-white bg-opacity-10 rounded-xl px-3 py-2">
             <label className="flex items-center gap-2 cursor-pointer text-xs font-semibold flex-shrink-0">
-              <input type="checkbox" checked={inclHeader} onChange={e => setInclHeader(e.target.checked)}
-                className="accent-white w-4 h-4" />
+              <input type="checkbox" checked={inclHeader} onChange={e => setInclHeader(e.target.checked)} className="accent-white w-4 h-4" />
               Hospital Header
             </label>
-            {inclHeader && (
-              <input value={hospName} onChange={e => setHospName(e.target.value)}
-                placeholder="Enter hospital name…"
-                className="flex-grow bg-white bg-opacity-20 text-white placeholder-blue-200 rounded-lg px-3 py-1 text-xs border border-white border-opacity-30 focus:outline-none" />
-            )}
+            {inclHeader && <input value={hospName} onChange={e => setHospName(e.target.value)} placeholder="Enter hospital name…" className="flex-grow bg-white bg-opacity-20 text-white placeholder-blue-200 rounded-lg px-3 py-1 text-xs border border-white border-opacity-30 focus:outline-none" />}
           </div>
         </div>
       </div>
 
-      {/* ── PDF STATUS ── */}
       {pdfStatus !== "idle" && (
         <div className="max-w-2xl mx-auto px-6 pt-3 print:hidden">
-          {pdfStatus === "working" && (
-            <div className="flex items-center gap-3 p-3 bg-blue-50 border border-blue-200 rounded-xl">
-              <div className="w-5 h-5 border-2 border-blue-500 border-t-transparent rounded-full animate-spin flex-shrink-0" />
-              <div>
-                <p className="text-sm font-semibold text-blue-700">Generating PDF…</p>
-                <p className="text-xs text-blue-500">ReportLab · Carlito + FreeSans Tamil · A4</p>
-              </div>
-            </div>
-          )}
+          {pdfStatus === "working" && <div className="flex items-center gap-3 p-3 bg-blue-50 border border-blue-200 rounded-xl"><div className="w-5 h-5 border-2 border-blue-500 border-t-transparent rounded-full animate-spin flex-shrink-0" /><p className="text-sm font-semibold text-blue-700">Generating document…</p></div>}
           {pdfStatus === "done"    && <div className="p-3 bg-green-50 border border-green-200 rounded-xl"><p className="text-sm font-semibold text-green-700">✅ Downloaded: {filename}</p></div>}
           {pdfStatus === "printed" && <div className="p-3 bg-blue-50 border border-blue-200 rounded-xl"><p className="text-sm font-semibold text-blue-700">🖨 Print dialog opened.</p></div>}
-          {pdfStatus === "error"   && <div className="p-3 bg-red-50 border border-red-200 rounded-xl"><p className="text-sm font-semibold text-red-700">⚠ API unavailable — print fallback used.</p></div>}
         </div>
       )}
 
-      {/* ── INLINE EDIT BOX ── */}
       {editMode && (
         <div className="max-w-2xl mx-auto px-6 pt-3 print:hidden">
           <div className="bg-amber-50 border border-amber-300 rounded-xl p-3">
-            <p className="text-xs font-bold text-amber-800 mb-2">✏ Edit Mode — additional notes appended to this document only</p>
-            <textarea value={editNotes} onChange={e => setEditNotes(e.target.value)} rows={3}
-              placeholder="Type additional notes or one-time corrections here…"
-              className="w-full border border-amber-300 rounded-lg px-3 py-2 text-xs bg-white focus:outline-none focus:ring-2 focus:ring-amber-400 resize-none" />
+            <p className="text-xs font-bold text-amber-800 mb-2">✏ Edit Mode — additional notes for this document only</p>
+            <textarea value={editNotes} onChange={e => setEditNotes(e.target.value)} rows={3} placeholder="Type additional notes or one-time corrections here…" className="w-full border border-amber-300 rounded-lg px-3 py-2 text-xs bg-white focus:outline-none focus:ring-2 focus:ring-amber-400 resize-none" />
           </div>
         </div>
       )}
 
-      {/* ══════════════════════════════════════════════════════════════════════
-          DOCUMENT BODY  —  matches layout of icu_consent_pdf.py exactly
-      ══════════════════════════════════════════════════════════════════════ */}
-      <div className="max-w-2xl mx-auto px-6 py-6 print:px-0"
-           style={{ fontFamily: "'Segoe UI', Arial, sans-serif" }}>
-
-        {/* PAGE HEADER */}
-        <div style={{ display:"flex", justifyContent:"space-between", alignItems:"flex-start",
-            borderBottom:"2px solid #1B3A5C", paddingBottom:"10px", marginBottom:"14px" }}>
+      <div className="max-w-2xl mx-auto px-6 py-6 print:px-0" style={{ fontFamily: "'Segoe UI', Arial, sans-serif" }}>
+        <div style={{ display:"flex", justifyContent:"space-between", alignItems:"flex-start", borderBottom:"2px solid #1B3A5C", paddingBottom:"10px", marginBottom:"14px" }}>
           <div style={{ fontSize:"9pt", color:"#555" }}>
-            {inclHeader && hospName
-              ? <><strong style={{ fontSize:"12pt", color:"#1B3A5C" }}>{hospName}</strong><br/>ICU / Emergency Department</>
-              : <span style={{ color:"#bbb", fontStyle:"italic" }}>ICU / Emergency Department</span>}
+            {inclHeader && hospName ? <><strong style={{ fontSize:"12pt", color:"#1B3A5C" }}>{hospName}</strong><br/>ICU / Emergency Department</> : <span style={{ color:"#bbb", fontStyle:"italic" }}>ICU / Emergency Department</span>}
           </div>
           <div style={{ textAlign:"right", fontSize:"9pt" }}>
             <div style={{ fontSize:"11pt", fontWeight:700 }}>{patientData.name || "—"}</div>
@@ -2337,61 +1554,33 @@ function PreviewScreen({ patientData, doctorData, selectedModules, prognosisData
           </div>
         </div>
 
-        {/* TITLE */}
         <div style={{ textAlign:"center", marginBottom:"14px", paddingBottom:"10px", borderBottom:"1px solid #ddd" }}>
-          <div style={{ fontSize:"13pt", fontWeight:700, color:"#1B3A5C", marginBottom:"4px" }}>
-            ICU / Emergency Prognosis Counselling and Consent Record
-          </div>
-          <div style={{ fontSize:"12pt", fontWeight:700, color:"#2a4a6a", fontFamily:"'Noto Sans Tamil', serif" }}>
-            ICU / அவசர சிகிச்சை முன்கணிப்பு ஆலோசனை மற்றும் சம்மத பதிவு
-          </div>
+          <div style={{ fontSize:"13pt", fontWeight:700, color:"#1B3A5C", marginBottom:"4px" }}>ICU / Emergency Prognosis Counselling and Consent Record</div>
+          <div style={{ fontSize:"12pt", fontWeight:700, color:"#2a4a6a", fontFamily:"'Noto Sans Tamil', serif" }}>ICU / அவசர சிகிச்சை முன்கணிப்பு ஆலோசனை மற்றும் சம்மத பதிவு</div>
         </div>
 
-        {/* CLINICIAN */}
         <section style={{ marginBottom:"16px" }}>
-          <h2 style={{ fontSize:"9.5pt", fontWeight:700, color:"#1B3A5C", borderBottom:"1.5px solid #c0d0e0",
-              paddingBottom:"4px", marginBottom:"8px", textTransform:"uppercase", letterSpacing:"0.5px" }}>
-            Session &amp; Clinician Details
-          </h2>
+          <h2 style={{ fontSize:"9.5pt", fontWeight:700, color:"#1B3A5C", borderBottom:"1.5px solid #c0d0e0", paddingBottom:"4px", marginBottom:"8px", textTransform:"uppercase", letterSpacing:"0.5px" }}>Session &amp; Clinician Details</h2>
           {[
             ["Attending Doctor", `${doctorData.name || "—"} — ${doctorData.designation || "—"}${doctorData.regNumber ? ` (Reg: ${doctorData.regNumber})` : ""}`],
-            ["Ward / Unit",      doctorData.ward],
-            ["Others Present",   doctorData.othersPresent],
+            ["Ward / Unit", doctorData.ward],
+            ["Others Present", doctorData.othersPresent],
             doctorData.interpreterPresent ? ["Interpreter", doctorData.interpreterName || "Present"] : null,
-          ].filter(Boolean).map(([label, val]) => val ? (
-            <p key={label} style={{ fontSize:"9.5pt", marginBottom:"3px" }}>
-              <strong style={{ color:"#555" }}>{label}:</strong>  {val}
-            </p>
-          ) : null)}
-          <p style={{ fontSize:"8.5pt", color:"#bbb", fontStyle:"italic" }}>
-            Date of Counselling: ________________  (to be handwritten at time of signing)
-          </p>
+          ].filter(Boolean).map(([label, val]) => val ? <p key={label} style={{ fontSize:"9.5pt", marginBottom:"3px" }}><strong style={{ color:"#555" }}>{label}:</strong>  {val}</p> : null)}
+          <p style={{ fontSize:"8.5pt", color:"#bbb", fontStyle:"italic" }}>Date of Counselling: ________________  (to be handwritten at time of signing)</p>
         </section>
 
-        {/* PAEDIATRIC */}
         {patientData.paediatric && (
-          <div style={{ border:"2px solid #f59e0b", borderRadius:"6px", padding:"8px",
-              background:"#fffbeb", marginBottom:"12px" }}>
+          <div style={{ border:"2px solid #f59e0b", borderRadius:"6px", padding:"8px", background:"#fffbeb", marginBottom:"12px" }}>
             <p style={{ fontWeight:700, color:"#92400e", fontSize:"9.5pt" }}>⚠  PAEDIATRIC CASE</p>
-            <p style={{ fontSize:"9pt", color:"#78350f", marginTop:"3px" }}>
-              This document relates to a paediatric patient. Paediatric-specific clinical modules available in Version 2.
-            </p>
-            <p style={{ fontSize:"10pt", color:"#92400e", marginTop:"3px", fontFamily:"'Noto Sans Tamil', serif" }}>
-              இந்த ஆவணம் ஒரு குழந்தை நோயாளியை சேர்ந்தது.
-            </p>
+            <p style={{ fontSize:"9pt", color:"#78350f", marginTop:"3px" }}>This document relates to a paediatric patient. Paediatric-specific clinical modules available in Version 2.</p>
+            <p style={{ fontSize:"10pt", color:"#92400e", marginTop:"3px", fontFamily:"'Noto Sans Tamil', serif" }}>இந்த ஆவணம் ஒரு குழந்தை நோயாளியை சேர்ந்தது.</p>
           </div>
         )}
 
-        {/* ORGAN-WISE */}
         <section style={{ marginBottom:"16px" }}>
-          <h2 style={{ fontSize:"9.5pt", fontWeight:700, color:"#1B3A5C", borderBottom:"1.5px solid #c0d0e0",
-              paddingBottom:"4px", marginBottom:"8px", textTransform:"uppercase", letterSpacing:"0.5px" }}>
-            Clinical Condition and Organ Status
-          </h2>
-          <p style={{ fontSize:"11pt", fontWeight:700, color:"#2a4a6a", marginBottom:"10px",
-              fontFamily:"'Noto Sans Tamil', serif" }}>
-            மருத்துவ நிலை மற்றும் உறுப்பு செயல்பாடு
-          </p>
+          <h2 style={{ fontSize:"9.5pt", fontWeight:700, color:"#1B3A5C", borderBottom:"1.5px solid #c0d0e0", paddingBottom:"4px", marginBottom:"8px", textTransform:"uppercase", letterSpacing:"0.5px" }}>Clinical Condition and Organ Status</h2>
+          <p style={{ fontSize:"11pt", fontWeight:700, color:"#2a4a6a", marginBottom:"10px", fontFamily:"'Noto Sans Tamil', serif" }}>மருத்துவ நிலை மற்றும் உறுப்பு செயல்பாடு</p>
           {contentDB.modules.map(module => {
             const modSel = selectedModules[module.id];
             if (!modSel || !Object.keys(modSel).length) return null;
@@ -2404,17 +1593,9 @@ function PreviewScreen({ patientData, doctorData, selectedModules, prognosisData
                   if (!sel) return null;
                   return (
                     <div key={cond.id} style={{ marginBottom:"10px", paddingBottom:"8px", borderBottom:"1px dashed #e5e5e5" }}>
-                      <p style={{ fontSize:"9.5pt", fontStyle:"italic", color:"#555", marginBottom:"5px" }}>
-                        {cond.keyword.en}  /  <span style={{ fontFamily:"'Noto Sans Tamil', serif" }}>{cond.keyword.ta}</span>
-                      </p>
-                      {sel.severity && cond.severity[sel.severity] && (<>
-                        <p style={{ fontSize:"10.5pt", lineHeight:1.6, marginBottom:"5px" }}>{cond.severity[sel.severity].en}</p>
-                        <p style={{ fontSize:"12pt", lineHeight:1.75, color:"#333", marginBottom:"8px", fontFamily:"'Noto Sans Tamil', serif" }}>{cond.severity[sel.severity].ta}</p>
-                      </>)}
-                      {sel.trajectory && cond.trajectory[sel.trajectory] && (<>
-                        <p style={{ fontSize:"10.5pt", lineHeight:1.6, marginBottom:"5px" }}>{cond.trajectory[sel.trajectory].en}</p>
-                        <p style={{ fontSize:"12pt", lineHeight:1.75, color:"#333", fontFamily:"'Noto Sans Tamil', serif" }}>{cond.trajectory[sel.trajectory].ta}</p>
-                      </>)}
+                      <p style={{ fontSize:"9.5pt", fontStyle:"italic", color:"#555", marginBottom:"5px" }}>{cond.keyword.en}  /  <span style={{ fontFamily:"'Noto Sans Tamil', serif" }}>{cond.keyword.ta}</span></p>
+                      {sel.severity && cond.severity[sel.severity] && (<><p style={{ fontSize:"10.5pt", lineHeight:1.6, marginBottom:"5px" }}>{cond.severity[sel.severity].en}</p><p style={{ fontSize:"12pt", lineHeight:1.75, color:"#333", marginBottom:"8px", fontFamily:"'Noto Sans Tamil', serif" }}>{cond.severity[sel.severity].ta}</p></>)}
+                      {sel.trajectory && cond.trajectory[sel.trajectory] && (<><p style={{ fontSize:"10.5pt", lineHeight:1.6, marginBottom:"5px" }}>{cond.trajectory[sel.trajectory].en}</p><p style={{ fontSize:"12pt", lineHeight:1.75, color:"#333", fontFamily:"'Noto Sans Tamil', serif" }}>{cond.trajectory[sel.trajectory].ta}</p></>)}
                     </div>
                   );
                 })}
@@ -2423,162 +1604,88 @@ function PreviewScreen({ patientData, doctorData, selectedModules, prognosisData
           })}
         </section>
 
-        {/* SCORES */}
         {hasScores && (
           <section style={{ marginBottom:"16px" }}>
-            <h2 style={{ fontSize:"9.5pt", fontWeight:700, color:"#1B3A5C", borderBottom:"1.5px solid #c0d0e0",
-                paddingBottom:"4px", marginBottom:"8px", textTransform:"uppercase", letterSpacing:"0.5px" }}>
-              Clinical Risk Assessment Scores
-            </h2>
-            <p style={{ fontSize:"9.5pt", color:"#555", marginBottom:"6px", fontFamily:"'Noto Sans Tamil', serif" }}>
-              மருத்துவ ஆபத்து மதிப்பீட்டு புள்ளிகள்
-            </p>
+            <h2 style={{ fontSize:"9.5pt", fontWeight:700, color:"#1B3A5C", borderBottom:"1.5px solid #c0d0e0", paddingBottom:"4px", marginBottom:"8px", textTransform:"uppercase", letterSpacing:"0.5px" }}>Clinical Risk Assessment Scores</h2>
+            <p style={{ fontSize:"9.5pt", color:"#555", marginBottom:"6px", fontFamily:"'Noto Sans Tamil', serif" }}>மருத்துவ ஆபத்து மதிப்பீட்டு புள்ளிகள்</p>
             <div style={{ display:"flex", gap:"10px", flexWrap:"wrap" }}>
               {Object.entries({ SOFA:"SOFA", APACHE_II:"APACHE II", GCS:"GCS", qSOFA:"qSOFA" }).map(([k,lbl]) =>
-                prognosisData.scores[k] ? (
-                  <div key={k} style={{ border:"1px solid #c0cfd8", borderRadius:"6px",
-                      padding:"5px 12px", textAlign:"center", minWidth:"65px", background:"#f0f8ff" }}>
-                    <div style={{ fontSize:"15pt", fontWeight:700, color:"#1B3A5C" }}>{prognosisData.scores[k]}</div>
-                    <div style={{ fontSize:"7.5pt", color:"#666" }}>{lbl}</div>
-                  </div>
-                ) : null
+                prognosisData.scores[k] ? <div key={k} style={{ border:"1px solid #c0cfd8", borderRadius:"6px", padding:"5px 12px", textAlign:"center", minWidth:"65px", background:"#f0f8ff" }}><div style={{ fontSize:"15pt", fontWeight:700, color:"#1B3A5C" }}>{prognosisData.scores[k]}</div><div style={{ fontSize:"7.5pt", color:"#666" }}>{lbl}</div></div> : null
               )}
             </div>
           </section>
         )}
 
-        {/* PROGNOSIS */}
         <section style={{ marginBottom:"16px" }}>
-          <h2 style={{ fontSize:"9.5pt", fontWeight:700, color:"#1B3A5C", borderBottom:"1.5px solid #c0d0e0",
-              paddingBottom:"4px", marginBottom:"8px", textTransform:"uppercase", letterSpacing:"0.5px" }}>
-            Overall Prognosis / ஒட்டுமொத்த முன்கணிப்பு
-          </h2>
+          <h2 style={{ fontSize:"9.5pt", fontWeight:700, color:"#1B3A5C", borderBottom:"1.5px solid #c0d0e0", paddingBottom:"4px", marginBottom:"8px", textTransform:"uppercase", letterSpacing:"0.5px" }}>Overall Prognosis / ஒட்டுமொத்த முன்கணிப்பு</h2>
           {selectedPrognosis && (<>
-            <div style={{ display:"inline-block", background:"#fee2e2", color:"#7f1d1d",
-                fontWeight:700, fontSize:"11pt", padding:"3px 12px", borderRadius:"4px", marginBottom:"8px" }}>
-              {selectedPrognosis.en}  /  <span style={{ fontFamily:"'Noto Sans Tamil', serif" }}>{selectedPrognosis.ta}</span>
-            </div>
+            <div style={{ display:"inline-block", background:"#fee2e2", color:"#7f1d1d", fontWeight:700, fontSize:"11pt", padding:"3px 12px", borderRadius:"4px", marginBottom:"8px" }}>{selectedPrognosis.en}  /  <span style={{ fontFamily:"'Noto Sans Tamil', serif" }}>{selectedPrognosis.ta}</span></div>
             <p style={{ fontSize:"10.5pt", lineHeight:1.6, marginBottom:"5px" }}>{selectedPrognosis.desc_en}</p>
             <p style={{ fontSize:"12pt", lineHeight:1.75, color:"#333", marginBottom:"8px", fontFamily:"'Noto Sans Tamil', serif" }}>{selectedPrognosis.desc_ta}</p>
           </>)}
-          {prognosisData.freeTextEn && (
-            <p style={{ fontSize:"10.5pt", lineHeight:1.6, borderLeft:"3px solid #1B6CA8",
-                paddingLeft:"8px", background:"#f0f7ff", marginTop:"4px" }}>{prognosisData.freeTextEn}</p>
-          )}
-          {prognosisData.freeTextTa && (
-            <p style={{ fontSize:"12pt", lineHeight:1.75, fontFamily:"'Noto Sans Tamil', serif",
-                borderLeft:"3px solid #1B6CA8", paddingLeft:"8px", background:"#f0f7ff", marginTop:"4px" }}>{prognosisData.freeTextTa}</p>
-          )}
+          {prognosisData.freeTextEn && <p style={{ fontSize:"10.5pt", lineHeight:1.6, borderLeft:"3px solid #1B6CA8", paddingLeft:"8px", background:"#f0f7ff", marginTop:"4px" }}>{prognosisData.freeTextEn}</p>}
+          {prognosisData.freeTextTa && <p style={{ fontSize:"12pt", lineHeight:1.75, fontFamily:"'Noto Sans Tamil', serif", borderLeft:"3px solid #1B6CA8", paddingLeft:"8px", background:"#f0f7ff", marginTop:"4px" }}>{prognosisData.freeTextTa}</p>}
         </section>
 
-        {/* INLINE EDIT NOTES */}
         {editMode && editNotes && (
-          <section style={{ marginBottom:"16px", background:"#fffbeb", border:"1px solid #f59e0b",
-              borderRadius:"6px", padding:"10px" }}>
+          <section style={{ marginBottom:"16px", background:"#fffbeb", border:"1px solid #f59e0b", borderRadius:"6px", padding:"10px" }}>
             <p style={{ fontSize:"9pt", fontWeight:700, color:"#92400e", marginBottom:"4px" }}>Additional Notes (Clinician)</p>
             <p style={{ fontSize:"10.5pt", lineHeight:1.6, whiteSpace:"pre-wrap" }}>{editNotes}</p>
           </section>
         )}
 
-        {/* CONSENT */}
         <section style={{ marginBottom:"16px" }}>
-          <h2 style={{ fontSize:"9.5pt", fontWeight:700, color:"#1B3A5C", borderBottom:"1.5px solid #c0d0e0",
-              paddingBottom:"4px", marginBottom:"8px", textTransform:"uppercase", letterSpacing:"0.5px" }}>
-            Consent Acknowledgement / சம்மத உறுதிப்படுத்தல்
-          </h2>
+          <h2 style={{ fontSize:"9.5pt", fontWeight:700, color:"#1B3A5C", borderBottom:"1.5px solid #c0d0e0", paddingBottom:"4px", marginBottom:"8px", textTransform:"uppercase", letterSpacing:"0.5px" }}>Consent Acknowledgement / சம்மத உறுதிப்படுத்தல்</h2>
           {activeConsents.map((s, i) => (
             <div key={s.id} style={{ marginBottom:"9px" }}>
               <p style={{ fontSize:"10pt", lineHeight:1.55 }}>{i + 1}.  {s.en}</p>
-              <p style={{ fontSize:"12pt", lineHeight:1.7, color:"#333", marginTop:"2px",
-                  fontFamily:"'Noto Sans Tamil', serif" }}>{s.ta}</p>
+              <p style={{ fontSize:"12pt", lineHeight:1.7, color:"#333", marginTop:"2px", fontFamily:"'Noto Sans Tamil', serif" }}>{s.ta}</p>
             </div>
           ))}
         </section>
 
-        {/* REFUSAL */}
         {refusal.documented && (
-          <div style={{ border:"2px solid #ef4444", borderRadius:"6px", padding:"10px",
-              background:"#fef2f2", marginBottom:"14px" }}>
+          <div style={{ border:"2px solid #ef4444", borderRadius:"6px", padding:"10px", background:"#fef2f2", marginBottom:"14px" }}>
             <p style={{ fontWeight:700, color:"#7f1d1d", fontSize:"9.5pt" }}>⚠  Documentation of Refusal to Sign</p>
-            <p style={{ fontWeight:700, color:"#991b1b", fontSize:"10.5pt", marginTop:"2px",
-                fontFamily:"'Noto Sans Tamil', serif" }}>கையொப்பமிட மறுத்தல் ஆவணப்படுத்தல்</p>
+            <p style={{ fontWeight:700, color:"#991b1b", fontSize:"10.5pt", marginTop:"2px", fontFamily:"'Noto Sans Tamil', serif" }}>கையொப்பமிட மறுத்தல் ஆவணப்படுத்தல்</p>
             <p style={{ fontSize:"9pt", color:"#7f1d1d", marginTop:"5px" }}>{refusal.reason}</p>
           </div>
         )}
 
-        {/* SIGNATURE BLOCK */}
         <section style={{ marginTop:"20px", paddingTop:"12px", borderTop:"1.5px solid #1B3A5C" }}>
-          <h2 style={{ fontSize:"9.5pt", fontWeight:700, color:"#1B3A5C", textTransform:"uppercase",
-              letterSpacing:"0.5px", marginBottom:"10px" }}>
-            Signature Block / கையொப்ப பகுதி
-          </h2>
+          <h2 style={{ fontSize:"9.5pt", fontWeight:700, color:"#1B3A5C", textTransform:"uppercase", letterSpacing:"0.5px", marginBottom:"10px" }}>Signature Block / கையொப்ப பகுதி</h2>
           <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:"22px" }}>
             <div>
-              {[
-                { lbl:"Signatory Name / கையொப்பமிட்டவர் பெயர்", val: signatoryData.name },
-                { lbl:"Relationship / நோயாளியுடனான உறவு",        val: signatoryData.relationship },
-                { lbl:"Signature / கையொப்பம்",                   val: null },
-              ].map(({ lbl, val }) => (
-                <div key={lbl} style={{ marginBottom:"12px" }}>
-                  <p style={{ fontSize:"8.5pt", fontWeight:600, color:"#555", marginBottom:"2px" }}>{lbl}</p>
-                  <div style={{ borderBottom:"1px solid #aaa", minHeight: val ? "auto" : "24px",
-                      paddingBottom:"2px", fontWeight:700, fontSize:"10pt" }}>{val || ""}</div>
-                </div>
+              {[{ lbl:"Signatory Name / கையொப்பமிட்டவர் பெயர்", val: signatoryData.name }, { lbl:"Relationship / நோயாளியுடனான உறவு", val: signatoryData.relationship }, { lbl:"Signature / கையொப்பம்", val: null }].map(({ lbl, val }) => (
+                <div key={lbl} style={{ marginBottom:"12px" }}><p style={{ fontSize:"8.5pt", fontWeight:600, color:"#555", marginBottom:"2px" }}>{lbl}</p><div style={{ borderBottom:"1px solid #aaa", minHeight: val ? "auto" : "24px", paddingBottom:"2px", fontWeight:700, fontSize:"10pt" }}>{val || ""}</div></div>
               ))}
             </div>
             <div>
-              {[
-                { lbl:"Witness / சாட்சி",             val: signatoryData.witnessName },
-                { lbl:"Witness Designation / சாட்சி பதவி", val: signatoryData.witnessDesignation },
-                { lbl:"Date / தேதி",                   val: null },
-                { lbl:"Time / நேரம்",                   val: null },
-              ].map(({ lbl, val }) => (
-                <div key={lbl} style={{ marginBottom:"12px" }}>
-                  <p style={{ fontSize:"8.5pt", fontWeight:600, color:"#555", marginBottom:"2px" }}>{lbl}</p>
-                  <div style={{ borderBottom:"1px solid #aaa", minHeight: val ? "auto" : "24px",
-                      paddingBottom:"2px", fontWeight:700, fontSize:"10pt" }}>{val || ""}</div>
-                </div>
+              {[{ lbl:"Witness / சாட்சி", val: signatoryData.witnessName }, { lbl:"Witness Designation / சாட்சி பதவி", val: signatoryData.witnessDesignation }, { lbl:"Date / தேதி", val: null }, { lbl:"Time / நேரம்", val: null }].map(({ lbl, val }) => (
+                <div key={lbl} style={{ marginBottom:"12px" }}><p style={{ fontSize:"8.5pt", fontWeight:600, color:"#555", marginBottom:"2px" }}>{lbl}</p><div style={{ borderBottom:"1px solid #aaa", minHeight: val ? "auto" : "24px", paddingBottom:"2px", fontWeight:700, fontSize:"10pt" }}>{val || ""}</div></div>
               ))}
             </div>
           </div>
-          <div style={{ fontSize:"7.5pt", color:"#888", fontStyle:"italic", textAlign:"center", marginTop:"10px",
-              background:"#f8f8f8", padding:"6px", borderRadius:"4px", border:"1px solid #e5e5e5" }}>
-            Date and time to be completed by the clinician at the time of signing. This is intentional — the app is a composition tool, not a timestamping authority.<br/>
-            <span style={{ fontFamily:"'Noto Sans Tamil', serif", fontSize:"8.5pt" }}>
-              தேதி மற்றும் நேரம் கையொப்பமிடும் போது மருத்துவரால் நிரப்பப்படவும்.
-            </span>
+          <div style={{ fontSize:"7.5pt", color:"#888", fontStyle:"italic", textAlign:"center", marginTop:"10px", background:"#f8f8f8", padding:"6px", borderRadius:"4px", border:"1px solid #e5e5e5" }}>
+            Date and time to be completed by the clinician at the time of signing.<br/>
+            <span style={{ fontFamily:"'Noto Sans Tamil', serif", fontSize:"8.5pt" }}>தேதி மற்றும் நேரம் கையொப்பமிடும் போது மருத்துவரால் நிரப்பப்படவும்.</span>
           </div>
         </section>
 
-        {/* FOOTER */}
-        <div style={{ borderTop:"1px solid #ddd", paddingTop:"5px", marginTop:"16px",
-            display:"flex", justifyContent:"space-between", fontSize:"7.5pt", color:"#bbb" }}>
+        <div style={{ borderTop:"1px solid #ddd", paddingTop:"5px", marginTop:"16px", display:"flex", justifyContent:"space-between", fontSize:"7.5pt", color:"#bbb" }}>
           <span>Document ID: {docId}</span>
           <span>ICU Consent App v1.0 — {today}</span>
         </div>
       </div>
 
-      {/* ── STICKY BOTTOM BAR ── */}
       <div className="sticky bottom-0 bg-white border-t border-gray-200 px-4 py-3 print:hidden shadow-lg">
         <div className="max-w-2xl mx-auto flex gap-3">
-          <button onClick={onClose}
-            className="flex-1 py-3 rounded-xl border-2 border-gray-200 text-gray-600 font-semibold text-sm active:scale-95 transition-all">
-            ← Back
-          </button>
-          <button onClick={() => window.print()}
-            className="flex-1 py-3 rounded-xl border-2 border-blue-600 text-blue-700 font-bold text-sm active:scale-95 transition-all">
-            🖨 Print
-          </button>
+          <button onClick={onClose} className="flex-1 py-3 rounded-xl border-2 border-gray-200 text-gray-600 font-semibold text-sm active:scale-95 transition-all">← Back</button>
+          <button onClick={() => window.print()} className="flex-1 py-3 rounded-xl border-2 border-blue-600 text-blue-700 font-bold text-sm active:scale-95 transition-all">🖨 Print</button>
           <button onClick={handleDownload} disabled={pdfStatus === "working"}
             style={pdfStatus !== "working" ? { background:"linear-gradient(135deg,#1B6CA8,#0d4f80)" } : {}}
-            className={`flex-2 flex-grow py-3 rounded-xl font-bold text-sm shadow active:scale-95 transition-all
-              ${pdfStatus === "working" ? "bg-gray-300 text-gray-500 cursor-not-allowed" : "text-white"}`}>
-            {pdfStatus === "working"
-              ? <span className="flex items-center justify-center gap-2">
-                  <span className="w-4 h-4 border-2 border-gray-400 border-t-transparent rounded-full animate-spin" />
-                  Generating…
-                </span>
-              : "📥 Download PDF"}
+            className={`flex-2 flex-grow py-3 rounded-xl font-bold text-sm shadow active:scale-95 transition-all ${pdfStatus === "working" ? "bg-gray-300 text-gray-500 cursor-not-allowed" : "text-white"}`}>
+            {pdfStatus === "working" ? <span className="flex items-center justify-center gap-2"><span className="w-4 h-4 border-2 border-gray-400 border-t-transparent rounded-full animate-spin" />Generating…</span> : "📥 Download"}
           </button>
         </div>
       </div>
@@ -2587,23 +1694,17 @@ function PreviewScreen({ patientData, doctorData, selectedModules, prognosisData
 }
 
 // ═════════════════════════════════════════════════════════════════════════════
-// PHASE 6 — SETTINGS SCREEN
+// SETTINGS SCREEN
 // ═════════════════════════════════════════════════════════════════════════════
 function SettingsScreen({ settings, onSave, savedPin, onChangePIN, adminPin, onChangeAdminPIN, onEnterAdmin, onClose, onClearAll }) {
   const [local, setLocal] = useState({ ...settings });
-  const [activeTab, setActiveTab] = useState("general"); // general | pins | storage
+  const [activeTab, setActiveTab] = useState("general");
   const [saved, setSaved] = useState(false);
+  const [newClinicalPIN, setNewClinicalPIN] = useState("");
+  const [newAdminPIN, setNewAdminPIN]       = useState("");
+  const [pinSaved, setPinSaved]             = useState("");
 
-  // PIN change state
-  const [newClinicalPIN, setNewClinicalPIN]   = useState("");
-  const [newAdminPIN, setNewAdminPIN]         = useState("");
-  const [pinSaved, setPinSaved]               = useState("");
-
-  const handleSave = () => {
-    onSave(local);
-    setSaved(true);
-    setTimeout(() => setSaved(false), 2000);
-  };
+  const handleSave = () => { onSave(local); setSaved(true); setTimeout(() => setSaved(false), 2000); };
 
   const handlePINChange = (type) => {
     const val = type === "clinical" ? newClinicalPIN : newAdminPIN;
@@ -2614,129 +1715,64 @@ function SettingsScreen({ settings, onSave, savedPin, onChangePIN, adminPin, onC
     setTimeout(() => setPinSaved(""), 2000);
   };
 
-  const tabs = [
-    { id: "general", label: "General" },
-    { id: "pins",    label: "PINs" },
-    { id: "storage", label: "Storage" },
-  ];
-
   return (
     <div className="fixed inset-0 z-50 bg-gray-50 overflow-y-auto">
-      {/* Header */}
       <div style={{ background: "linear-gradient(135deg, #1B6CA8 0%, #0d4f80 100%)" }} className="sticky top-0 z-10 text-white px-4 py-3 shadow-lg">
         <div className="max-w-2xl mx-auto flex items-center justify-between">
           <button onClick={onClose} className="font-semibold text-sm">← Back</button>
           <h2 className="font-bold">Settings</h2>
-          <button onClick={handleSave}
-            className="text-xs bg-white text-blue-800 px-3 py-1.5 rounded-lg font-bold">
-            {saved ? "✓ Saved" : "Save"}
-          </button>
+          <button onClick={handleSave} className="text-xs bg-white text-blue-800 px-3 py-1.5 rounded-lg font-bold">{saved ? "✓ Saved" : "Save"}</button>
         </div>
       </div>
-
       <div className="max-w-2xl mx-auto px-4 py-4">
-        {/* Tab bar */}
         <div className="flex gap-2 mb-5 bg-white rounded-xl p-1 shadow-sm border border-gray-100">
-          {tabs.map(t => (
-            <button key={t.id} onClick={() => setActiveTab(t.id)}
-              className={`flex-1 py-2 rounded-lg text-sm font-semibold transition-all
-                ${activeTab === t.id ? "bg-blue-600 text-white shadow" : "text-gray-500 hover:text-gray-700"}`}>
-              {t.label}
-            </button>
+          {[{ id: "general", label: "General" }, { id: "pins", label: "PINs" }, { id: "storage", label: "Storage" }].map(t => (
+            <button key={t.id} onClick={() => setActiveTab(t.id)} className={`flex-1 py-2 rounded-lg text-sm font-semibold transition-all ${activeTab === t.id ? "bg-blue-600 text-white shadow" : "text-gray-500 hover:text-gray-700"}`}>{t.label}</button>
           ))}
         </div>
 
-        {/* ── GENERAL TAB ── */}
         {activeTab === "general" && (
           <div className="space-y-4">
             <Card className="p-5 space-y-4">
               <p className="text-sm font-bold text-gray-700">Institution Details</p>
+              <div><label className="block text-xs font-semibold text-gray-600 mb-1">Hospital Name</label><input value={local.hospitalName} onChange={e => setLocal({ ...local, hospitalName: e.target.value })} placeholder="e.g. Apollo Hospitals, Chennai" className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 bg-gray-50" /></div>
+              <div><label className="block text-xs font-semibold text-gray-600 mb-1">Printer Email Address</label><input type="email" value={local.printerEmail} onChange={e => setLocal({ ...local, printerEmail: e.target.value })} placeholder="printer@hospital.in" className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 bg-gray-50" /></div>
               <div>
-                <label className="block text-xs font-semibold text-gray-600 mb-1">Hospital Name</label>
-                <input value={local.hospitalName} onChange={e => setLocal({ ...local, hospitalName: e.target.value })}
-                  placeholder="e.g. Apollo Hospitals, Chennai"
-                  className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 bg-gray-50" />
-              </div>
-              <div>
-                <label className="block text-xs font-semibold text-gray-600 mb-1">Printer Email Address</label>
-                <input type="email" value={local.printerEmail} onChange={e => setLocal({ ...local, printerEmail: e.target.value })}
-                  placeholder="printer@hospital.in"
-                  className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 bg-gray-50" />
-              </div>
-              <div>
-                <label className="flex items-center gap-2 mb-2 cursor-pointer">
-                  <input type="checkbox" checked={local.mrdEmailEnabled}
-                    onChange={e => setLocal({ ...local, mrdEmailEnabled: e.target.checked })}
-                    className="accent-blue-600 w-4 h-4" />
-                  <span className="text-xs font-semibold text-gray-600">CC Medical Records Department</span>
-                </label>
-                {local.mrdEmailEnabled && (
-                  <input type="email" value={local.mrdEmail} onChange={e => setLocal({ ...local, mrdEmail: e.target.value })}
-                    placeholder="mrd@hospital.in"
-                    className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 bg-gray-50" />
-                )}
+                <label className="flex items-center gap-2 mb-2 cursor-pointer"><input type="checkbox" checked={local.mrdEmailEnabled} onChange={e => setLocal({ ...local, mrdEmailEnabled: e.target.checked })} className="accent-blue-600 w-4 h-4" /><span className="text-xs font-semibold text-gray-600">CC Medical Records Department</span></label>
+                {local.mrdEmailEnabled && <input type="email" value={local.mrdEmail} onChange={e => setLocal({ ...local, mrdEmail: e.target.value })} placeholder="mrd@hospital.in" className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 bg-gray-50" />}
               </div>
             </Card>
-
             <Card className="p-5">
               <p className="text-sm font-bold text-gray-700 mb-3">Session Timeout</p>
               <div className="grid grid-cols-3 gap-2">
                 {[3, 5, 10].map(mins => (
-                  <button key={mins} onClick={() => setLocal({ ...local, sessionTimeout: mins })}
-                    className={`py-3 rounded-xl text-sm font-semibold border-2 transition-all
-                      ${local.sessionTimeout === mins ? "border-blue-600 bg-blue-50 text-blue-700" : "border-gray-200 text-gray-600"}`}>
-                    {mins} min
-                  </button>
+                  <button key={mins} onClick={() => setLocal({ ...local, sessionTimeout: mins })} className={`py-3 rounded-xl text-sm font-semibold border-2 transition-all ${local.sessionTimeout === mins ? "border-blue-600 bg-blue-50 text-blue-700" : "border-gray-200 text-gray-600"}`}>{mins} min</button>
                 ))}
               </div>
             </Card>
-
             <Card className="p-5">
               <p className="text-sm font-bold text-gray-700 mb-1">Admin Panel</p>
               <p className="text-xs text-gray-500 mb-3">Access content editor, version history, and advanced settings.</p>
-              <button onClick={onEnterAdmin}
-                style={{ background: "linear-gradient(135deg, #1B6CA8 0%, #0d4f80 100%)" }}
-                className="w-full py-3 rounded-xl text-white font-bold text-sm active:scale-95 transition-all">
-                🔐 Open Admin Panel
-              </button>
+              <button onClick={onEnterAdmin} style={{ background: "linear-gradient(135deg, #1B6CA8 0%, #0d4f80 100%)" }} className="w-full py-3 rounded-xl text-white font-bold text-sm active:scale-95 transition-all">🔐 Open Admin Panel</button>
             </Card>
-
             <div className="bg-gray-50 border border-gray-200 rounded-xl p-4 text-center">
               <p className="text-xs text-gray-400">ICU Consent App v{local.appVersion}</p>
-              <p className="text-xs text-gray-400">Content DB v{contentDB.version} · {contentDB.modules.length} modules</p>
             </div>
           </div>
         )}
 
-        {/* ── PINS TAB ── */}
         {activeTab === "pins" && (
           <div className="space-y-4">
             <Card className="p-5 space-y-4">
               <p className="text-sm font-bold text-gray-700">Change Clinical PIN</p>
-              <p className="text-xs text-gray-500">This PIN locks the app after inactivity. Required to open the app.</p>
-              <input type="password" maxLength={4} value={newClinicalPIN}
-                onChange={e => setNewClinicalPIN(e.target.value.replace(/\D/g, ""))}
-                placeholder="Enter new 4-digit PIN"
-                className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 bg-gray-50 text-center tracking-widest text-xl" />
-              <button onClick={() => handlePINChange("clinical")}
-                className="w-full py-3 rounded-xl border-2 border-blue-500 text-blue-700 font-bold text-sm active:scale-95 transition-all">
-                {pinSaved === "clinical" ? "✓ Clinical PIN Updated" : "Update Clinical PIN"}
-              </button>
+              <input type="password" maxLength={4} value={newClinicalPIN} onChange={e => setNewClinicalPIN(e.target.value.replace(/\D/g, ""))} placeholder="Enter new 4-digit PIN" className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 bg-gray-50 text-center tracking-widest text-xl" />
+              <button onClick={() => handlePINChange("clinical")} className="w-full py-3 rounded-xl border-2 border-blue-500 text-blue-700 font-bold text-sm active:scale-95 transition-all">{pinSaved === "clinical" ? "✓ Clinical PIN Updated" : "Update Clinical PIN"}</button>
             </Card>
-
             <Card className="p-5 space-y-4">
               <p className="text-sm font-bold text-gray-700">Change Admin PIN</p>
-              <p className="text-xs text-gray-500">This PIN protects the Admin Panel and content editor.</p>
-              <input type="password" maxLength={4} value={newAdminPIN}
-                onChange={e => setNewAdminPIN(e.target.value.replace(/\D/g, ""))}
-                placeholder="Enter new 4-digit Admin PIN"
-                className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 bg-gray-50 text-center tracking-widest text-xl" />
-              <button onClick={() => handlePINChange("admin")}
-                className="w-full py-3 rounded-xl border-2 border-amber-500 text-amber-700 font-bold text-sm active:scale-95 transition-all">
-                {pinSaved === "admin" ? "✓ Admin PIN Updated" : "Update Admin PIN"}
-              </button>
+              <input type="password" maxLength={4} value={newAdminPIN} onChange={e => setNewAdminPIN(e.target.value.replace(/\D/g, ""))} placeholder="Enter new 4-digit Admin PIN" className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 bg-gray-50 text-center tracking-widest text-xl" />
+              <button onClick={() => handlePINChange("admin")} className="w-full py-3 rounded-xl border-2 border-amber-500 text-amber-700 font-bold text-sm active:scale-95 transition-all">{pinSaved === "admin" ? "✓ Admin PIN Updated" : "Update Admin PIN"}</button>
             </Card>
-
             <div className="bg-amber-50 border border-amber-200 rounded-xl p-4">
               <p className="text-xs font-bold text-amber-800 mb-1">⚠ Keep PINs safe</p>
               <p className="text-xs text-amber-700">Default clinical PIN: 1234 · Default admin PIN: 9999. Change both before clinical use.</p>
@@ -2744,46 +1780,24 @@ function SettingsScreen({ settings, onSave, savedPin, onChangePIN, adminPin, onC
           </div>
         )}
 
-        {/* ── STORAGE TAB ── */}
         {activeTab === "storage" && (
           <div className="space-y-4">
             <Card className="p-5">
               <p className="text-sm font-bold text-gray-700 mb-3">Storage Tier</p>
               <div className="space-y-3">
-                {[
-                  { id: "session", label: "Session Only (Tier 1)", desc: "Data cleared when browser closes. Zero server storage. Recommended.", icon: "🔒" },
-                  { id: "local",   label: "Local Device (Tier 2)", desc: "Data persists on this device. Clear manually on patient discharge.", icon: "💾" },
-                ].map(opt => (
-                  <label key={opt.id} className={`flex items-start gap-3 p-3 rounded-xl border-2 cursor-pointer transition-all
-                    ${local.storageTier === opt.id ? "border-blue-500 bg-blue-50" : "border-gray-200"}`}>
-                    <input type="radio" name="storage" value={opt.id} checked={local.storageTier === opt.id}
-                      onChange={() => setLocal({ ...local, storageTier: opt.id })} className="mt-1 accent-blue-600 w-4 h-4" />
-                    <div>
-                      <p className="font-semibold text-sm">{opt.icon} {opt.label}</p>
-                      <p className="text-xs text-gray-500 mt-0.5">{opt.desc}</p>
-                    </div>
+                {[{ id: "session", label: "Session Only (Tier 1)", desc: "Data cleared when browser closes. Zero server storage. Recommended.", icon: "🔒" }, { id: "local", label: "Local Device (Tier 2)", desc: "Data persists on this device. Clear manually on patient discharge.", icon: "💾" }].map(opt => (
+                  <label key={opt.id} className={`flex items-start gap-3 p-3 rounded-xl border-2 cursor-pointer transition-all ${local.storageTier === opt.id ? "border-blue-500 bg-blue-50" : "border-gray-200"}`}>
+                    <input type="radio" name="storage" value={opt.id} checked={local.storageTier === opt.id} onChange={() => setLocal({ ...local, storageTier: opt.id })} className="mt-1 accent-blue-600 w-4 h-4" />
+                    <div><p className="font-semibold text-sm">{opt.icon} {opt.label}</p><p className="text-xs text-gray-500 mt-0.5">{opt.desc}</p></div>
                   </label>
                 ))}
               </div>
             </Card>
-
             <div className="border-2 border-red-300 rounded-xl overflow-hidden">
               <div className="bg-red-50 p-4">
                 <p className="text-sm font-bold text-red-800 mb-1">⚠ Clear All Local Data</p>
-                <p className="text-xs text-red-700 leading-relaxed mb-3">
-                  This will delete all patient session data, settings, and content overrides from this device. This cannot be undone.
-                </p>
-                <button
-                  onClick={() => {
-                    if (window.confirm("DELETE ALL LOCAL DATA\n\nThis will erase all session data, settings, and content edits from this device.\n\nThis cannot be undone. Confirm?")) {
-                      if (window.confirm("Are you absolutely sure? All data will be permanently erased.")) {
-                        onClearAll();
-                      }
-                    }
-                  }}
-                  className="w-full py-3 rounded-xl bg-red-600 text-white font-bold text-sm active:scale-95 transition-all">
-                  🗑 Clear ALL Local Data
-                </button>
+                <p className="text-xs text-red-700 leading-relaxed mb-3">This will delete all patient session data, settings, and content from this device. This cannot be undone.</p>
+                <button onClick={() => { if (window.confirm("DELETE ALL LOCAL DATA\n\nThis will erase all session data, settings, and content edits.\n\nThis cannot be undone. Confirm?")) { if (window.confirm("Are you absolutely sure?")) onClearAll(); } }} className="w-full py-3 rounded-xl bg-red-600 text-white font-bold text-sm active:scale-95 transition-all">🗑 Clear ALL Local Data</button>
               </div>
             </div>
           </div>
@@ -2794,22 +1808,20 @@ function SettingsScreen({ settings, onSave, savedPin, onChangePIN, adminPin, onC
 }
 
 // ═════════════════════════════════════════════════════════════════════════════
-// PHASE 6 — ADMIN PANEL
+// ADMIN PANEL
 // ═════════════════════════════════════════════════════════════════════════════
 function AdminPanel({ contentDB, contentOverrides, onSaveOverride, onUpdateContentDB, onClose }) {
-  const [view, setView]           = useState("dashboard"); // dashboard | editor | search
-  const [editTarget, setEditTarget] = useState(null); // { moduleId, condId, field, level }
+  const [view, setView]             = useState("dashboard");
+  const [editTarget, setEditTarget] = useState(null);
   const [searchQuery, setSearchQuery] = useState("");
 
   // ── DASHBOARD ──────────────────────────────────────────────────────────────
   const Dashboard = () => {
     const totalConditions = contentDB.modules.reduce((sum, m) => sum + m.conditions.length, 0);
-    const totalSentences  = totalConditions * 8; // 4 severity + 4 trajectory per condition
     const overrideCount   = Object.keys(contentOverrides).length;
 
     return (
       <div className="space-y-4">
-        {/* Stats */}
         <div className="grid grid-cols-3 gap-3">
           {[
             { label: "Modules",    value: contentDB.modules.length, color: "blue" },
@@ -2823,26 +1835,19 @@ function AdminPanel({ contentDB, contentOverrides, onSaveOverride, onUpdateConte
           ))}
         </div>
 
-        {/* Search */}
         <Card className="p-4">
           <div className="relative">
             <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400">🔍</span>
-            <input
-              value={searchQuery}
-              onChange={e => { setSearchQuery(e.target.value); if (e.target.value.length > 1) setView("search"); }}
-              placeholder="Search all English and Tamil content..."
-              className="w-full border border-gray-200 rounded-xl pl-9 pr-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 bg-gray-50"
-            />
+            <input value={searchQuery} onChange={e => { setSearchQuery(e.target.value); if (e.target.value.length > 1) setView("search"); }} placeholder="Search all English and Tamil content..."
+              className="w-full border border-gray-200 rounded-xl pl-9 pr-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 bg-gray-50" />
           </div>
         </Card>
 
-        {/* Module list */}
         <div className="space-y-2">
           <p className="text-xs font-bold text-gray-500 uppercase tracking-wider px-1">Content Modules</p>
           {contentDB.modules.map(module => {
             const editedInModule = module.conditions.some(c =>
-              ["severity_mild","severity_moderate","severity_severe","severity_critical",
-               "trajectory_improving","trajectory_status_quo","trajectory_worsening","trajectory_failing"]
+              ["severity_mild","severity_moderate","severity_severe","severity_critical","trajectory_improving","trajectory_status_quo","trajectory_worsening","trajectory_failing"]
               .some(level => contentOverrides[`${module.id}.${c.id}.${level}`])
             );
             return (
@@ -2858,13 +1863,13 @@ function AdminPanel({ contentDB, contentOverrides, onSaveOverride, onUpdateConte
                   </div>
                   <div className="mt-3 space-y-1">
                     {module.conditions.map(cond => (
-                      <button key={cond.id}
-                        onClick={() => { setEditTarget({ moduleId: module.id, condId: cond.id }); setView("editor"); }}
+                      <button key={cond.id} onClick={() => { setEditTarget({ moduleId: module.id, condId: cond.id }); setView("editor"); }}
                         className="w-full text-left px-3 py-2 rounded-lg bg-gray-50 hover:bg-blue-50 border border-gray-100 hover:border-blue-200 transition-all">
                         <p className="text-xs font-semibold text-gray-700">{cond.keyword.en}</p>
                         <p className="text-xs text-gray-400" style={{ fontFamily: "'Noto Sans Tamil', sans-serif" }}>{cond.keyword.ta}</p>
                       </button>
                     ))}
+                    {/* ── ADD NEW CONDITION BUTTON (Change 7) ── */}
                     <button
                       onClick={() => {
                         const newId = `cond_${Date.now()}`;
@@ -2885,12 +1890,20 @@ function AdminPanel({ contentDB, contentOverrides, onSaveOverride, onUpdateConte
                             failing:    { en: "", ta: "" },
                           },
                         };
-                        module.conditions.push(newCond);
+                        // Save permanently to contentDB (Change 7 — immutable update)
+                        const updatedDB = {
+                          ...contentDB,
+                          modules: contentDB.modules.map(m =>
+                            m.id === module.id
+                              ? { ...m, conditions: [...m.conditions, newCond] }
+                              : m
+                          ),
+                        };
+                        onUpdateContentDB(updatedDB);
                         setEditTarget({ moduleId: module.id, condId: newId });
                         setView("editor");
                       }}
-                      className="w-full text-left px-3 py-2 rounded-lg bg-blue-50 hover:bg-blue-100 border border-blue-200 border-dashed transition-all mt-1"
-                    >
+                      className="w-full text-left px-3 py-2 rounded-lg bg-blue-50 hover:bg-blue-100 border border-blue-200 border-dashed transition-all mt-1">
                       <p className="text-xs font-semibold text-blue-600">+ Add New Condition to {module.label.en}</p>
                     </button>
                   </div>
@@ -2907,41 +1920,24 @@ function AdminPanel({ contentDB, contentOverrides, onSaveOverride, onUpdateConte
   const SearchResults = () => {
     const q = searchQuery.toLowerCase();
     const results = [];
-
     for (const module of contentDB.modules) {
       for (const cond of module.conditions) {
         const checkText = (level, lang, text) => {
-          if (text.toLowerCase().includes(q)) {
-            results.push({ module, cond, level, lang, text, snippet: text.substring(0, 120) });
-          }
+          if (text && text.toLowerCase().includes(q)) results.push({ module, cond, level, lang, text, snippet: text.substring(0, 120) });
         };
-        for (const [level, texts] of Object.entries(cond.severity)) {
-          checkText(`severity_${level}`, "en", texts.en);
-          checkText(`severity_${level}`, "ta", texts.ta);
-        }
-        for (const [level, texts] of Object.entries(cond.trajectory)) {
-          checkText(`trajectory_${level}`, "ta", texts.ta);
-          checkText(`trajectory_${level}`, "en", texts.en);
-        }
+        for (const [level, texts] of Object.entries(cond.severity)) { checkText(`severity_${level}`, "en", texts.en); checkText(`severity_${level}`, "ta", texts.ta); }
+        for (const [level, texts] of Object.entries(cond.trajectory)) { checkText(`trajectory_${level}`, "en", texts.en); checkText(`trajectory_${level}`, "ta", texts.ta); }
       }
     }
-
     return (
       <div className="space-y-3">
         <p className="text-sm text-gray-500">{results.length} result{results.length !== 1 ? "s" : ""} for "<strong>{searchQuery}</strong>"</p>
         {results.slice(0, 30).map((r, i) => (
           <Card key={i} className="p-4">
             <p className="text-xs text-blue-600 font-semibold mb-1">{r.module.label.en} → {r.cond.keyword.en}</p>
-            <p className="text-xs text-gray-500 mb-1">{r.level.replace("_", " ")} · {r.lang === "ta" ? "Tamil" : "English"}</p>
-            <p className="text-xs text-gray-700 leading-relaxed"
-              style={r.lang === "ta" ? { fontFamily: "'Noto Sans Tamil', sans-serif" } : {}}>
-              {r.snippet}{r.text.length > 120 ? "…" : ""}
-            </p>
-            <button
-              onClick={() => { setEditTarget({ moduleId: r.module.id, condId: r.cond.id }); setView("editor"); }}
-              className="mt-2 text-xs text-blue-600 font-semibold hover:underline">
-              Edit this condition →
-            </button>
+            <p className="text-xs text-gray-500 mb-1">{r.level.replace(/_/g, " ")} · {r.lang === "ta" ? "Tamil" : "English"}</p>
+            <p className="text-xs text-gray-700 leading-relaxed" style={r.lang === "ta" ? { fontFamily: "'Noto Sans Tamil', sans-serif" } : {}}>{r.snippet}{r.text.length > 120 ? "…" : ""}</p>
+            <button onClick={() => { setEditTarget({ moduleId: r.module.id, condId: r.cond.id }); setView("editor"); }} className="mt-2 text-xs text-blue-600 font-semibold hover:underline">Edit this condition →</button>
           </Card>
         ))}
       </div>
@@ -2963,7 +1959,6 @@ function AdminPanel({ contentDB, contentOverrides, onSaveOverride, onUpdateConte
     const [reason, setReason]           = useState("");
     const [saveMsg, setSaveMsg]         = useState("");
 
-    // Load current text (override if exists, otherwise original)
     useEffect(() => {
       const key = `${moduleId}.${condId}.${activeLevel}`;
       const override = contentOverrides[key];
@@ -2976,83 +1971,85 @@ function AdminPanel({ contentDB, contentOverrides, onSaveOverride, onUpdateConte
       setReason("");
     }, [activeLevel]);
 
+    // ── SAVE — Change 8: writes permanently to contentDB ──────────────────
     const handleSave = () => {
       if (!reason.trim()) { alert("Please enter a reason for this edit."); return; }
       const key = `${moduleId}.${condId}.${activeLevel}`;
+
+      // Save to version history
       onSaveOverride(key, editEn, editTa, reason);
+
+      // Save permanently into contentDB
+      const [fieldType, level] = activeLevel.startsWith("severity_")
+        ? ["severity", activeLevel.replace("severity_", "")]
+        : ["trajectory", activeLevel.replace("trajectory_", "")];
+
+      const updatedDB = {
+        ...contentDB,
+        modules: contentDB.modules.map(m =>
+          m.id === moduleId
+            ? {
+                ...m,
+                conditions: m.conditions.map(c =>
+                  c.id === condId
+                    ? { ...c, [fieldType]: { ...c[fieldType], [level]: { en: editEn, ta: editTa } } }
+                    : c
+                ),
+              }
+            : m
+        ),
+      };
+      onUpdateContentDB(updatedDB);
+
       setSaveMsg("Saved ✓");
       setTimeout(() => setSaveMsg(""), 2000);
     };
 
-    const handleRestore = (histEntry) => {
-      setEditEn(histEntry.en);
-      setEditTa(histEntry.ta);
-      setShowHistory(false);
-    };
+    const handleRestore = (histEntry) => { setEditEn(histEntry.en); setEditTa(histEntry.ta); setShowHistory(false); };
 
     const levelGroups = [
       { group: "Severity / தீவிரத்தன்மை", levels: [
-        { id: "severity_mild",     label: "Mild",     ta: "லேசான",       color: "emerald" },
+        { id: "severity_mild",     label: "Mild",     ta: "லேசான",      color: "emerald" },
         { id: "severity_moderate", label: "Moderate", ta: "நடுத்தர",    color: "amber" },
         { id: "severity_severe",   label: "Severe",   ta: "தீவிர",       color: "orange" },
-        { id: "severity_critical", label: "Critical", ta: "மிக தீவிர",   color: "red" },
+        { id: "severity_critical", label: "Critical", ta: "மிக தீவிர",  color: "red" },
       ]},
       { group: "Trajectory / மருத்துவ போக்கு", levels: [
-        { id: "trajectory_improving",  label: "Improving",  ta: "மேம்படுகிறது",    color: "emerald" },
-        { id: "trajectory_status_quo", label: "Status Quo", ta: "மாற்றமில்லை",     color: "blue" },
-        { id: "trajectory_worsening",  label: "Worsening",  ta: "மோசமடைகிறது",    color: "orange" },
-        { id: "trajectory_failing",    label: "Failing",    ta: "செயலிழக்கிறது",  color: "red" },
+        { id: "trajectory_improving",  label: "Improving",  ta: "மேம்படுகிறது",   color: "emerald" },
+        { id: "trajectory_status_quo", label: "Status Quo", ta: "மாற்றமில்லை",    color: "blue" },
+        { id: "trajectory_worsening",  label: "Worsening",  ta: "மோசமடைகிறது",   color: "orange" },
+        { id: "trajectory_failing",    label: "Failing",    ta: "செயலிழக்கிறது", color: "red" },
       ]},
     ];
 
-    const key = `${moduleId}.${condId}.${activeLevel}`;
+    const key         = `${moduleId}.${condId}.${activeLevel}`;
     const hasOverride = !!contentOverrides[key];
-    const history = contentOverrides[key]?.history || [];
-
-    const charCountEn = editEn.length;
-    const charCountTa = editTa.length;
-
-    // Compute live preview
-    const previewEn = editEn;
-    const previewTa = editTa;
+    const history     = contentOverrides[key]?.history || [];
 
     return (
       <div className="space-y-4">
-        {/* Breadcrumb */}
         <div className="flex items-center gap-2 text-xs text-gray-500">
           <button onClick={() => setView("dashboard")} className="text-blue-600 hover:underline">Modules</button>
-          <span>›</span>
-          <span className="text-gray-700 font-semibold">{module.label.en}</span>
-          <span>›</span>
-          <span className="text-gray-700">{cond.keyword.en}</span>
+          <span>›</span><span className="text-gray-700 font-semibold">{module.label.en}</span>
+          <span>›</span><span className="text-gray-700">{cond.keyword.en}</span>
         </div>
 
-        {/* Condition header */}
         <Card className="p-4">
           <p className="font-bold text-gray-900">{cond.keyword.en}</p>
           <p className="text-sm text-gray-500 mt-0.5" style={{ fontFamily: "'Noto Sans Tamil', sans-serif" }}>{cond.keyword.ta}</p>
-          {hasOverride && (
-            <span className="inline-block mt-2 text-xs bg-amber-100 text-amber-700 px-2 py-0.5 rounded-full font-semibold">
-              ✏ This condition has institution edits
-            </span>
-          )}
+          {hasOverride && <span className="inline-block mt-2 text-xs bg-amber-100 text-amber-700 px-2 py-0.5 rounded-full font-semibold">✏ This condition has institution edits</span>}
         </Card>
 
-        {/* Level selector */}
         {levelGroups.map(group => (
           <div key={group.group}>
             <p className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-2 px-1">{group.group}</p>
             <div className="grid grid-cols-2 gap-2">
               {group.levels.map(lvl => {
-                const lvlKey = `${moduleId}.${condId}.${lvl.id}`;
+                const lvlKey   = `${moduleId}.${condId}.${lvl.id}`;
                 const isEdited = !!contentOverrides[lvlKey];
                 return (
-                  <button key={lvl.id}
-                    onClick={() => setActiveLevel(lvl.id)}
-                    className={`p-3 rounded-xl border-2 text-left transition-all active:scale-95
-                      ${activeLevel === lvl.id
-                        ? `border-${lvl.color}-500 bg-${lvl.color}-50`
-                        : "border-gray-200 bg-white"}`}>
+                  <button key={lvl.id} onClick={() => setActiveLevel(lvl.id)}
+                    className={`p-3 rounded-xl border-2 text-left transition-all active:scale-95 ${activeLevel === lvl.id ? `border-${lvl.color}-500 bg-${lvl.color}-50` : "border-gray-200 bg-white"}`}>
                     <p className="text-xs font-bold text-gray-800">{lvl.label}</p>
                     <p className="text-xs text-gray-400" style={{ fontFamily: "'Noto Sans Tamil', sans-serif" }}>{lvl.ta}</p>
                     {isEdited && <span className="text-xs text-amber-600 font-semibold">✏ edited</span>}
@@ -3063,19 +2060,12 @@ function AdminPanel({ contentDB, contentOverrides, onSaveOverride, onUpdateConte
           </div>
         ))}
 
-        {/* Text editors */}
         <Card className="p-5 space-y-4">
           <div className="flex items-center justify-between">
             <p className="text-sm font-bold text-gray-700">Edit Content</p>
-            {history.length > 0 && (
-              <button onClick={() => setShowHistory(!showHistory)}
-                className="text-xs text-blue-600 font-semibold hover:underline">
-                {showHistory ? "Hide" : "View"} History ({history.length})
-              </button>
-            )}
+            {history.length > 0 && <button onClick={() => setShowHistory(!showHistory)} className="text-xs text-blue-600 font-semibold hover:underline">{showHistory ? "Hide" : "View"} History ({history.length})</button>}
           </div>
 
-          {/* Version history */}
           {showHistory && (
             <div className="bg-gray-50 border border-gray-200 rounded-xl p-3 space-y-3 max-h-64 overflow-y-auto">
               <p className="text-xs font-bold text-gray-600">Version History</p>
@@ -3086,63 +2076,43 @@ function AdminPanel({ contentDB, contentOverrides, onSaveOverride, onUpdateConte
                     <button onClick={() => handleRestore(h)} className="text-blue-600 font-semibold hover:underline ml-2">Restore</button>
                   </div>
                   <p className="text-gray-500 italic mb-1">Reason: {h.reason}</p>
-                  <p className="text-gray-700 line-clamp-2">{h.en.substring(0, 80)}…</p>
+                  <p className="text-gray-700 line-clamp-2">{h.en.substring(0, 80)}{h.en.length > 80 ? "…" : ""}</p>
                 </div>
               ))}
             </div>
           )}
 
-          {/* English editor */}
           <div>
             <div className="flex justify-between items-center mb-1">
               <label className="text-xs font-semibold text-gray-600">English</label>
-              <span className="text-xs text-gray-400">{charCountEn} chars</span>
+              <span className="text-xs text-gray-400">{editEn.length} chars</span>
             </div>
-            <textarea value={editEn} onChange={e => setEditEn(e.target.value)} rows={4}
-              className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none bg-gray-50"
-            />
+            <textarea value={editEn} onChange={e => setEditEn(e.target.value)} rows={4} className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none bg-gray-50" />
           </div>
 
-          {/* Tamil editor */}
           <div>
             <div className="flex justify-between items-center mb-1">
               <label className="text-xs font-semibold text-gray-600">Tamil / தமிழ்</label>
-              <span className="text-xs text-gray-400">{charCountTa} chars</span>
+              <span className="text-xs text-gray-400">{editTa.length} chars</span>
             </div>
-            <VoiceTextarea
-              value={editTa}
-              onChange={setEditTa}
-              placeholder="தமிழில் உரையை இங்கே எழுதவும் அல்லது குரல் மூலம் உள்ளிடவும்..."
-              lang="ta-IN"
-              rows={4}
-            />
+            <VoiceTextarea value={editTa} onChange={setEditTa} placeholder="தமிழில் உரையை இங்கே எழுதவும்..." lang="ta-IN" rows={4} />
           </div>
 
-          {/* Reason for edit */}
           <div>
-            <label className="block text-xs font-semibold text-gray-600 mb-1">
-              Reason for edit <span className="text-red-500">*</span>
-            </label>
-            <input value={reason} onChange={e => setReason(e.target.value)}
-              placeholder="e.g. Corrected Tamil translation, Updated local terminology..."
-              className="w-full border border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 bg-gray-50" />
+            <label className="block text-xs font-semibold text-gray-600 mb-1">Reason for edit <span className="text-red-500">*</span></label>
+            <input value={reason} onChange={e => setReason(e.target.value)} placeholder="e.g. Corrected Tamil translation, Updated local terminology..." className="w-full border border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 bg-gray-50" />
           </div>
 
-          <button onClick={handleSave}
-            style={{ background: "linear-gradient(135deg, #1B6CA8 0%, #0d4f80 100%)" }}
-            className="w-full py-3 rounded-xl text-white font-bold text-sm active:scale-95 transition-all">
+          <button onClick={handleSave} style={{ background: "linear-gradient(135deg, #1B6CA8 0%, #0d4f80 100%)" }} className="w-full py-3 rounded-xl text-white font-bold text-sm active:scale-95 transition-all">
             {saveMsg || "Save Changes"}
           </button>
         </Card>
 
-        {/* Live preview */}
         <Card className="p-5">
           <p className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-3">Document Preview</p>
           <div className="space-y-2">
-            <p className="text-sm text-gray-800 leading-relaxed">{previewEn || <span className="text-gray-300 italic">English text will appear here</span>}</p>
-            <p className="text-sm text-gray-600 leading-relaxed" style={{ fontFamily: "'Noto Sans Tamil', sans-serif" }}>
-              {previewTa || <span className="text-gray-300 italic">Tamil text will appear here</span>}
-            </p>
+            <p className="text-sm text-gray-800 leading-relaxed">{editEn || <span className="text-gray-300 italic">English text will appear here</span>}</p>
+            <p className="text-sm text-gray-600 leading-relaxed" style={{ fontFamily: "'Noto Sans Tamil', sans-serif" }}>{editTa || <span className="text-gray-300 italic">Tamil text will appear here</span>}</p>
           </div>
         </Card>
       </div>
@@ -3151,39 +2121,27 @@ function AdminPanel({ contentDB, contentOverrides, onSaveOverride, onUpdateConte
 
   return (
     <div className="fixed inset-0 z-50 bg-gray-50 overflow-y-auto">
-      {/* Header */}
       <div style={{ background: "linear-gradient(135deg, #0d3f6b 0%, #0a2a4a 100%)" }} className="sticky top-0 z-10 text-white px-4 py-3 shadow-lg">
         <div className="max-w-2xl mx-auto flex items-center justify-between">
-          <button
-            onClick={view !== "dashboard" ? () => { setView("dashboard"); setSearchQuery(""); } : onClose}
-            className="font-semibold text-sm">
+          <button onClick={view !== "dashboard" ? () => { setView("dashboard"); setSearchQuery(""); } : onClose} className="font-semibold text-sm">
             {view !== "dashboard" ? "← Modules" : "← Exit Admin"}
           </button>
           <div className="text-center">
             <h2 className="font-bold text-sm">Admin Panel</h2>
             <p className="text-xs text-blue-300">System Administrator</p>
           </div>
-          <div className="w-16 text-right">
-            {view === "editor" && editTarget && (
-              <span className="text-xs text-blue-300">Editing</span>
-            )}
-          </div>
+          <div className="w-16 text-right">{view === "editor" && editTarget && <span className="text-xs text-blue-300">Editing</span>}</div>
         </div>
-
-        {/* Sub-nav */}
         {view !== "editor" && (
           <div className="max-w-2xl mx-auto mt-2 flex gap-2">
             {["dashboard", "search"].map(v => (
-              <button key={v} onClick={() => setView(v)}
-                className={`flex-1 py-1.5 rounded-lg text-xs font-semibold transition-all capitalize
-                  ${view === v ? "bg-white text-blue-800" : "bg-white bg-opacity-15 text-white"}`}>
+              <button key={v} onClick={() => setView(v)} className={`flex-1 py-1.5 rounded-lg text-xs font-semibold transition-all capitalize ${view === v ? "bg-white text-blue-800" : "bg-white bg-opacity-15 text-white"}`}>
                 {v === "dashboard" ? "📋 Modules" : "🔍 Search"}
               </button>
             ))}
           </div>
         )}
       </div>
-
       <div className="max-w-2xl mx-auto px-4 py-4">
         {view === "dashboard" && <Dashboard />}
         {view === "search"    && <SearchResults />}
@@ -3192,3 +2150,4 @@ function AdminPanel({ contentDB, contentOverrides, onSaveOverride, onUpdateConte
     </div>
   );
 }
+
