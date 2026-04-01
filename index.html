@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en-IN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+
+  <!-- PWA Metadata -->
+  <title>ICU Prognosis Consent</title>
+  <meta name="description" content="Bilingual ICU and Emergency prognosis counselling consent document generator" />
+  <meta name="application-name" content="ICU Consent" />
+
+  <!-- Theme -->
+  <meta name="theme-color" content="#1B6CA8" />
+  <meta name="msapplication-TileColor" content="#1B6CA8" />
+
+  <!-- PWA — iOS Safari -->
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="ICU Consent" />
+
+  <!-- Manifest -->
+  <link rel="manifest" href="/manifest.json" />
+
+  <!-- Icons -->
+  <link rel="icon" type="image/png" sizes="32x32" href="/icons/icon-32x32.png" />
+  <link rel="icon" type="image/png" sizes="16x16" href="/icons/icon-16x16.png" />
+  <link rel="apple-touch-icon" href="/icons/icon-192x192.png" />
+  <link rel="apple-touch-icon" sizes="152x152" href="/icons/icon-152x152.png" />
+  <link rel="apple-touch-icon" sizes="144x144" href="/icons/icon-144x144.png" />
+
+  <!-- Noto Sans Tamil — loaded early for Tamil text rendering -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Noto+Sans+Tamil:wght@400;600;700&display=swap"
+    rel="stylesheet"
+  />
+
+  <!-- Tailwind CSS CDN (development) — replaced by build output in production -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- Service Worker Registration — loaded BEFORE React bundle -->
+  <script src="/sw-register.js"></script>
+
+  <style>
+    /* Prevent flash of unstyled Tamil text */
+    body {
+      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+      -webkit-tap-highlight-color: transparent;
+      -webkit-touch-callout: none;
+    }
+
+    /* Tamil text class — applied globally via Tailwind or inline style */
+    .tamil {
+      font-family: 'Noto Sans Tamil', 'Tamil Sangam MN', 'Latha', serif;
+    }
+
+    /* Prevent rubber-band scrolling on iOS for the PIN lock screen */
+    .pin-screen {
+      overscroll-behavior: none;
+      overflow: hidden;
+      height: 100vh;
+    }
+
+    /* Offline banner slide-in */
+    @keyframes slideDown {
+      from { transform: translateY(-100%); opacity: 0; }
+      to   { transform: translateY(0);    opacity: 1; }
+    }
+    .offline-banner {
+      animation: slideDown 0.3s ease-out;
+    }
+
+    /* PWA install banner slide-up */
+    @keyframes slideUp {
+      from { transform: translateY(100%); opacity: 0; }
+      to   { transform: translateY(0);    opacity: 1; }
+    }
+    .install-banner {
+      animation: slideUp 0.3s ease-out;
+    }
+
+    /* Ensure minimum touch targets (44×44px per spec) */
+    button, a, input[type="checkbox"], input[type="radio"] {
+      min-height: 44px;
+      min-width: 44px;
+    }
+    input[type="checkbox"], input[type="radio"] {
+      min-height: 20px; /* override for inline checkboxes */
+      min-width: 20px;
+    }
+  </style>
+</head>
+
+<body class="bg-gray-50">
+  <!-- React app root -->
+  <div id="root"></div>
+
+  <!-- React + App bundle (Vite output) -->
+  <!--script type="module" src="/static/js/main.js"></script>-->
+   <script type="module" src="/src/main.jsx"></script>
+
+</body>
+</html>
